@@ -1,6 +1,6 @@
-package com.useful.uCarsAPI;
+package com.useful.ucars.api;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Provides an interfact to add custom checking to cars
@@ -8,14 +8,14 @@ import org.bukkit.entity.Entity;
  * @author storm345
  * 
  */
-public interface CarCheck {
+public interface ItemCarCheck {
 	/**
 	 * Called to check if a (uCars checked and valid) car is a car (According to
 	 * your plugin)
 	 * 
-	 * @param car
+	 * @param carStack
 	 *            The uCars-valid car
 	 * @return True if it is a car
 	 */
-	public Boolean isACar(Entity car);
+	public Boolean isACar(ItemStack carStack);
 }

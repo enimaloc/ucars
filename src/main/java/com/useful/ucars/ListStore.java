@@ -11,17 +11,17 @@ import java.util.ArrayList;
 
 public class ListStore {
 
-	public File StorageFile;
+	public File storageFile;
 	public ArrayList<String> values;
 
 	public ListStore(File file) {
-		this.StorageFile = file;
+		this.storageFile = file;
 		this.values = new ArrayList<String>();
 
-		if (this.StorageFile.exists() == false) {
+		if (this.storageFile.exists() == false) {
 			try {
 				// this.StorageFile.mkdir();
-				this.StorageFile.createNewFile();
+				this.storageFile.createNewFile();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -31,7 +31,7 @@ public class ListStore {
 	public void load() {
 		try {
 			DataInputStream input = new DataInputStream(new FileInputStream(
-					this.StorageFile));
+					this.storageFile));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					input));
 
@@ -52,7 +52,7 @@ public class ListStore {
 	public void save() {
 
 		try {
-			FileWriter stream = new FileWriter(this.StorageFile);
+			FileWriter stream = new FileWriter(this.storageFile);
 			BufferedWriter out = new BufferedWriter(stream);
 
 			for (String value : this.values) {

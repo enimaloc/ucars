@@ -38,8 +38,8 @@
       		  <configuration>
         	  	<show>public</show>
         	  	 <excludePackageNames>
-        	  	 com.useful.ucars:com.useful.ucarsCommon
-        	  	 </excludePackageNames>
+                     com.useful.ucars:com.useful.ucars.common
+                 </excludePackageNames>
         	  	 <stylesheetfile>https://dl.dropboxusercontent.com/u/50672767/ucars/doc/stylesheet.css</stylesheetfile>
       		  </configuration>
      		 </plugin>

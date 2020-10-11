@@ -7,11 +7,11 @@ import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.useful.ucarsCommon.IdMaterialConverter;
+import com.useful.ucars.common.IdMaterialConverter;
 
 public class ConfigVersionConverter {
 	public static FileConfiguration convert(FileConfiguration config, double target){
-		ucars.plugin.getLogger().info("Converting config to new format...");
+		UCars.plugin.getLogger().info("Converting config to new format...");
 		double td = target*10; //Target is in format n.n
 		int t = (int)td;
 		switch(t){
@@ -38,7 +38,7 @@ public class ConfigVersionConverter {
 		convertItemFormat(config, "general.cars.fuel.items.ids");
 		convertItemFormat(config, "general.cars.barriers");
 		convertSpeedModsFormat(config, "general.cars.speedMods");
-		ucars.plugin.getLogger().info("Config successfully converted!");
+		UCars.plugin.getLogger().info("Config successfully converted!");
 		return config;
 	}
 	public static FileConfiguration convertItemFormat(FileConfiguration config, String configKey){
@@ -77,7 +77,7 @@ public class ConfigVersionConverter {
 			} catch (Exception e) {
 				//Incorrect format also
 			}
-			ucars.plugin.getLogger().info("Invalid config value: "+raw+", skipping...");
+			UCars.plugin.getLogger().info("Invalid config value: "+raw+", skipping...");
 		}
 	    return newIds;
 	}
@@ -105,7 +105,7 @@ public class ConfigVersionConverter {
 			} catch (Exception e) {
 				//Incorrect format also
 			}
-			ucars.plugin.getLogger().info("Invalid config speedmod: "+raw+", skipping...");
+			UCars.plugin.getLogger().info("Invalid config speedmod: "+raw+", skipping...");
 		}
 	    return newIds;
 	}

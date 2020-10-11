@@ -1,12 +1,12 @@
 package com.useful.ucars;
 
-import com.useful.uCarsAPI.CarRespawnReason;
-import com.useful.uCarsAPI.uCarCrashEvent;
-import com.useful.uCarsAPI.uCarRespawnEvent;
-import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.api.CarRespawnReason;
+import com.useful.ucars.api.UCarCrashEvent;
+import com.useful.ucars.api.uCarRespawnEvent;
+import com.useful.ucars.api.UCarsAPI;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucars.util.UEntityMeta;
-import com.useful.ucarsCommon.StatValue;
+import com.useful.ucars.common.StatValue;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -40,8 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-public class uCarsListener implements Listener {
-	private ucars plugin;
+public class UCarsListener implements Listener {
+	private UCars plugin;
 	private List<String> ignoreJump = null;
 	
 	private Boolean carsEnabled = true;
@@ -55,12 +55,12 @@ public class uCarsListener implements Listener {
 	
 	private double defaultSpeed = 30;
 	private static double defaultHealth = 10;
-	private double damage_water = 0;
-	private double damage_lava = 10;
-	private double damage_cactus = 5;
-	private double uCar_jump_amount = 5;
-	private double crash_damage = 0;
-	private double hitby_crash_damage = 0;
+	private double damageWater = 0;
+	private double damageLava = 10;
+	private double damageCactus = 5;
+	private double UCarJumpAmount = 5;
+	private double crashDamage = 0;
+	private double hitByCrashDamage = 0;
 	
 	private String fuelBypassPerm = "ufuel.bypass";
 	
@@ -75,8 +75,8 @@ public class uCarsListener implements Listener {
     
     private ConcurrentHashMap<String, Double> speedMods = new ConcurrentHashMap<String, Double>();
 
-	public uCarsListener(ucars plugin) {
-		this.plugin = ucars.plugin;
+	public UCarsListener(UCars plugin) {
+		this.plugin = UCars.plugin;
 		ignoreJump = new ArrayList<String>();
 		ignoreJump.add("AIR"); //Air
 		ignoreJump.add("LAVA"); //Lava
@@ -115,42 +115,42 @@ public class uCarsListener implements Listener {
 		ignoreJump.add(Material.JUNGLE_FENCE_GATE.name());
 		/*ignoreJump.add("CARPET"); // carpet
 */		
-		usePerms = ucars.config.getBoolean("general.permissions.enable");
-		carsEnabled = ucars.config.getBoolean("general.cars.enable");
-		defaultHealth = ucars.config.getDouble("general.cars.health.default");
+		usePerms = UCars.config.getBoolean("general.permissions.enable");
+		carsEnabled = UCars.config.getBoolean("general.cars.enable");
+		defaultHealth = UCars.config.getDouble("general.cars.health.default");
 		
-		damage_water = ucars.config
+		damageWater = UCars.config
 				.getDouble("general.cars.health.underwaterDamage");
-		damage_lava = ucars.config
+		damageLava = UCars.config
 				.getDouble("general.cars.health.lavaDamage");
-		damage_cactus = ucars.config
+		damageCactus = UCars.config
 				.getDouble("general.cars.health.cactusDamage");
-		defaultSpeed = ucars.config
+		defaultSpeed = UCars.config
 				.getDouble("general.cars.defSpeed");
-		fuelBypassPerm = ucars.config
+		fuelBypassPerm = UCars.config
 				.getString("general.cars.fuel.bypassPerm");
-		uCar_jump_amount = ucars.config
+		UCarJumpAmount = UCars.config
 				.getDouble("general.cars.jumpAmount");
-		crash_damage = ucars.config
+		crashDamage = UCars.config
 				.getDouble("general.cars.health.crashDamage");
 		
-		hitby_crash_damage = ucars.config
+		hitByCrashDamage = UCars.config
 				.getDouble("general.cars.hitBy.damage");
 		
-		licenseEnabled = ucars.config.getBoolean("general.cars.licenses.enable");
-		roadBlocksEnabled = ucars.config.getBoolean("general.cars.roadBlocks.enable");
-		trafficLightsEnabled = ucars.config.getBoolean("general.cars.trafficLights.enable");
-		effectBlocksEnabled = ucars.config.getBoolean("general.cars.effectBlocks.enable");
-		fuelEnabled = ucars.config.getBoolean("general.cars.fuel.enable");
-		fuelUseItems = ucars.config.getBoolean("general.cars.fuel.items.enable");
+		licenseEnabled = UCars.config.getBoolean("general.cars.licenses.enable");
+		roadBlocksEnabled = UCars.config.getBoolean("general.cars.roadBlocks.enable");
+		trafficLightsEnabled = UCars.config.getBoolean("general.cars.trafficLights.enable");
+		effectBlocksEnabled = UCars.config.getBoolean("general.cars.effectBlocks.enable");
+		fuelEnabled = UCars.config.getBoolean("general.cars.fuel.enable");
+		fuelUseItems = UCars.config.getBoolean("general.cars.fuel.items.enable");
 		
 		if(roadBlocksEnabled){
-		    List<String> ids = ucars.config
+		    List<String> ids = UCars.config
 					.getStringList("general.cars.roadBlocks.ids");
-			ids.addAll(ucars.config.getStringList("general.cars.blockBoost"));
-			ids.addAll(ucars.config.getStringList("general.cars.HighblockBoost"));
-			ids.addAll(ucars.config.getStringList("general.cars.ResetblockBoost"));
-			ids.addAll(ucars.config.getStringList("general.cars.jumpBlock"));
+			ids.addAll(UCars.config.getStringList("general.cars.blockBoost"));
+			ids.addAll(UCars.config.getStringList("general.cars.HighblockBoost"));
+			ids.addAll(UCars.config.getStringList("general.cars.ResetblockBoost"));
+			ids.addAll(UCars.config.getStringList("general.cars.jumpBlock"));
 			ids.add("AIR");
 			ids.add("LAVA");
 			ids.add("STATIONARY_LAVA");
@@ -159,26 +159,26 @@ public class uCarsListener implements Listener {
 			roadBlocks = ids;
 		}
 		if(trafficLightsEnabled){
-			trafficLightRawIds = ucars.config.getStringList("general.cars.trafficLights.waitingBlock");
+			trafficLightRawIds = UCars.config.getStringList("general.cars.trafficLights.waitingBlock");
 		}
 		if(effectBlocksEnabled){
-			blockBoost = ucars.config.getStringList("general.cars.blockBoost");
-			highBlockBoost = ucars.config.getStringList("general.cars.HighblockBoost");
-			resetBlockBoost = ucars.config.getStringList("general.cars.ResetblockBoost");
-			jumpBlock = ucars.config.getStringList("general.cars.jumpBlock");
-			teleportBlock = ucars.config.getStringList("general.cars.teleportBlock");
+			blockBoost = UCars.config.getStringList("general.cars.blockBoost");
+			highBlockBoost = UCars.config.getStringList("general.cars.HighblockBoost");
+			resetBlockBoost = UCars.config.getStringList("general.cars.ResetblockBoost");
+			jumpBlock = UCars.config.getStringList("general.cars.jumpBlock");
+			teleportBlock = UCars.config.getStringList("general.cars.teleportBlock");
 		}
 		
-		barriers = ucars.config.getStringList("general.cars.barriers"); //Load specified barriers
+		barriers = UCars.config.getStringList("general.cars.barriers"); //Load specified barriers
 		
 		//SpeedMods
-		List<String> units = ucars.config.getStringList("general.cars.speedMods");
+		List<String> units = UCars.config.getStringList("general.cars.speedMods");
 		for (String unit : units) {
 			String[] sections = unit.split("-");
 			try {
-				String rawMat = sections[0];
-				double mult = Double.parseDouble(sections[1]);
-				speedMods.put(rawMat, mult);
+				String rawMaterials = sections[0];
+				double multiplier = Double.parseDouble(sections[1]);
+				speedMods.put(rawMaterials, multiplier);
 			} catch (NumberFormatException e) {
 				//Invalid speed mod
 			}
@@ -202,7 +202,7 @@ public class uCarsListener implements Listener {
 	/*
 	 * Checks if a trafficlight sign is attached to the given block
 	 */
-	public boolean trafficlightSignOn(Block block) {
+	public boolean trafficLightSignOn(Block block) {
 		if (block.getRelative(BlockFace.NORTH).getState() instanceof Sign) {
 			Sign sign = (Sign) block.getRelative(BlockFace.NORTH).getState();
 			if (ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(
@@ -247,9 +247,9 @@ public class uCarsListener implements Listener {
 	 * Checks if the specified player is inside a ucar (public for traincarts
 	 * support)
 	 */
-	public boolean inACar(String playername) {
+	public boolean inACar(String playerName) {
 		try {
-			Player p = plugin.getServer().getPlayer(playername);
+			Player p = plugin.getServer().getPlayer(playerName);
 			return inACar(p);
 		} catch (Exception e) {
 			// Server reloading
@@ -264,21 +264,21 @@ public class uCarsListener implements Listener {
 		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
 		}
-		Location loc = cart.getLocation();
-		Block b = loc.getBlock();
-		String mat = b.getType().name().toUpperCase();
-		String underMat = b.getRelative(BlockFace.DOWN).getType().name().toUpperCase();
-		String underUnderMat = b.getRelative(BlockFace.DOWN, 2).getType().name().toUpperCase();
+		Location location = cart.getLocation();
+		Block block = location.getBlock();
+		String material = block.getType().name().toUpperCase();
+		String underMaterial = block.getRelative(BlockFace.DOWN).getType().name().toUpperCase();
+		String underUnderMaterial = block.getRelative(BlockFace.DOWN, 2).getType().name().toUpperCase();
 		List<String> checks = new ArrayList<String>();
-		if(ucars.ignoreRails){
+		if(UCars.ignoreRails){
 			checks.add("POWERED_RAIL");
 			checks.add("RAILS");
 			checks.add("DETECTOR_RAIL");
 			checks.add("ACTIVATOR_RAIL");
 		}
-		if(checks.contains(mat) 
-				|| checks.contains(underMat) 
-				|| checks.contains(underUnderMat)){
+		if(checks.contains(material)
+				|| checks.contains(underMaterial)
+				|| checks.contains(underUnderMaterial)){
 			return false;
 		}
 		if (!plugin.getAPI().runCarChecks(cart)) {
@@ -296,8 +296,8 @@ public class uCarsListener implements Listener {
 		World w = plugin.getServer().getPlayer(p).getLocation().getWorld();
 		w.playSound(plugin.getServer().getPlayer(p).getLocation(),
 				Sound.ENTITY_BAT_TAKEOFF, 1.5f, -2);
-		if (ucars.carBoosts.containsKey(p)) {
-			ucars.carBoosts.remove(p);
+		if (UCars.carBoosts.containsKey(p)) {
+			UCars.carBoosts.remove(p);
 		}
 		return;
 	}
@@ -307,17 +307,17 @@ public class uCarsListener implements Listener {
 	 */
 	public boolean carBoost(String playerName, final double power,
 			final long lengthMillis, double defaultSpeed) {
-		final String p = playerName;
-		final double defMult = defaultSpeed;
-		double Cur = defMult;
-		if (ucars.carBoosts.containsKey(p)) {
-			Cur = ucars.carBoosts.get(p);
+		final String player = playerName;
+		final double defMultiplier = defaultSpeed;
+		double current = defMultiplier;
+		if (UCars.carBoosts.containsKey(player)) {
+			current = UCars.carBoosts.get(player);
 		}
-		if (Cur > defMult) {
+		if (current > defMultiplier) {
 			// Already boosting!
 			return false;
 		}
-		final double current = Cur;
+		final double finalCurrent = current;
 		if (plugin == null) {
 			plugin.getLogger().log(Level.SEVERE,
 					Lang.get("lang.error.pluginNull"));
@@ -325,21 +325,21 @@ public class uCarsListener implements Listener {
 		plugin.getServer().getScheduler()
 				.runTaskAsynchronously(plugin, new Runnable() {
 					public void run() {
-						World w = plugin.getServer().getPlayer(p).getLocation()
+						World world = plugin.getServer().getPlayer(player).getLocation()
 								.getWorld();
-						w.playSound(plugin.getServer().getPlayer(p)
+						world.playSound(plugin.getServer().getPlayer(player)
 								.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1.5f, -2);
-						double speed = current + power;
-						ucars.carBoosts.put(p, speed);
+						double speed = finalCurrent + power;
+						UCars.carBoosts.put(player, speed);
 						// Boosting!
 						try {
 							Thread.sleep(lengthMillis);
 						} catch (InterruptedException e) {
-							ucars.carBoosts.remove(p);
+							UCars.carBoosts.remove(player);
 							return;
 						}
 						// paused for set time!
-						ucars.carBoosts.remove(p);
+						UCars.carBoosts.remove(player);
 						// resumed normal speed!
 						return;
 					}
@@ -351,25 +351,25 @@ public class uCarsListener implements Listener {
 	 * Checks if the specified player is inside a ucars (public for traincarts
 	 * support)
 	 */
-	public boolean inACar(Player p) {
+	public boolean inACar(Player player) {
 		try {
-			if (p == null) {
+			if (player == null) {
 				// Should NEVER happen(It means they r offline)
 				return false;
 			}
-			if (p.getVehicle() == null) {
+			if (player.getVehicle() == null) {
 				return false;
 			}
-			Entity ent = p.getVehicle();
-			if (!(ent instanceof Vehicle)) {
-				while (!(ent instanceof Vehicle) && ent.getVehicle() != null) {
-					ent = ent.getVehicle();
+			Entity entity = player.getVehicle();
+			if (!(entity instanceof Vehicle)) {
+				while (!(entity instanceof Vehicle) && entity.getVehicle() != null) {
+					entity = entity.getVehicle();
 				}
-				if (!(ent instanceof Vehicle)) {
+				if (!(entity instanceof Vehicle)) {
 					return false;
 				}
 			}
-			Vehicle cart = (Vehicle) ent;
+			Vehicle cart = (Vehicle) entity;
 			return isACar(cart);
 		} catch (Exception e) {
 			// Server reloading
@@ -395,8 +395,8 @@ public class uCarsListener implements Listener {
 	void carExit(VehicleExitEvent event){
 		UEntityMeta.removeMetadata(event.getVehicle(), "car.vec");
 		UEntityMeta.removeMetadata(event.getExited(), "ucars.smooth");
-		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
-		event.getExited().removeMetadata("ucars.smooth", ucars.plugin);
+		event.getVehicle().removeMetadata("car.vec", UCars.plugin);
+		event.getExited().removeMetadata("ucars.smooth", UCars.plugin);
 		if(event.getVehicle().hasMetadata("safeExit.ignore")
 				|| UEntityMeta.hasMetadata(event.getVehicle(), "safeExit.ignore")){
 			return;
@@ -412,28 +412,28 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		UEntityMeta.removeMetadata(event.getVehicle(), "car.vec");
-		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
-		final Vehicle v = event.getVehicle();
-		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+		event.getVehicle().removeMetadata("car.vec", UCars.plugin);
+		final Vehicle vehicle = event.getVehicle();
+		Bukkit.getScheduler().runTaskLaterAsynchronously(UCars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				UEntityMeta.removeAllMeta(v);
+				UEntityMeta.removeAllMeta(vehicle);
 				return;
 			}}, 100l);
 	}
 	
 	@EventHandler
 	void entityDeath(EntityDeathEvent event){
-		final Entity e = event.getEntity();
-		if(e instanceof Player){
+		final Entity entity = event.getEntity();
+		if(entity instanceof Player){
 			return;
 		}
-		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+		Bukkit.getScheduler().runTaskLaterAsynchronously(UCars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				UEntityMeta.removeAllMeta(e);
+				UEntityMeta.removeAllMeta(entity);
 				return;
 			}}, 100l);
 	}
@@ -476,7 +476,7 @@ public class uCarsListener implements Listener {
 		if (event.getPlayer().isOp()) {
 			if (!plugin.protocolLib) {
 				event.getPlayer().sendMessage(
-						ucars.colors.getError()
+						UCars.colors.getError()
 								+ Lang.get("lang.messages.noProtocolLib"));
 			}
 		}
@@ -491,7 +491,7 @@ public class uCarsListener implements Listener {
 	 * for old version hybrids, eg. tekkti)
 	 */
 	@EventHandler
-	public void tickCalcsAndLegacy(VehicleUpdateEvent event) {
+	public void tickCalculationsAndLegacy(VehicleUpdateEvent event) {
 		// start vehicleupdate mechs
 		Vehicle vehicle = event.getVehicle();
 		if(!(vehicle instanceof Vehicle)){
@@ -505,33 +505,33 @@ public class uCarsListener implements Listener {
 
 		Vector travel = vehicle.getVelocity();
 
-		if(event instanceof ucarUpdateEvent){
-			travel = ((ucarUpdateEvent) event).getTravelVector().clone();
+		if(event instanceof UCarUpdateEvent){
+			travel = ((UCarUpdateEvent) event).getTravelVector().clone();
 		}
 
-		if(!(event instanceof ucarUpdateEvent)){ //If it's just the standard every tick vehicle update event...
+		if(!(event instanceof UCarUpdateEvent)){ //If it's just the standard every tick vehicle update event...
 			if(UEntityMeta.hasMetadata(vehicle, "car.vec")){ //If it has the 'car.vec' meta, we need to use RACE CONTROLS on this vehicle
-				ucarUpdateEvent evt = (ucarUpdateEvent) UEntityMeta.getMetadata(vehicle, "car.vec").get(0).value(); //Handle the update event (Called here not directly because otherwise ppl with a better connection fire more control events and move marginally faster)
-				evt.player = ((Player)passenger); //Set the player (in the car) onto the event so it can be handled by uCarUpdate handlers
-				evt.incrementRead(); //Register that the control input update has been executed (So if no new control input event within 2 ticks; we know to stop the car)
+				UCarUpdateEvent newEvent = (UCarUpdateEvent) UEntityMeta.getMetadata(vehicle, "car.vec").get(0).value(); //Handle the update event (Called here not directly because otherwise ppl with acceleration better connection fire more control events and move marginally faster)
+				newEvent.player = ((Player)passenger); //Set the player (in the car) onto the event so it can be handled by uCarUpdate handlers
+				newEvent.incrementRead(); //Register that the control input update has been executed (So if no new control input event within 2 ticks; we know to stop the car)
 				UEntityMeta.removeMetadata(vehicle, "car.vec"); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
-				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
-				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
-				UEntityMeta.setMetadata(vehicle, "car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
-				/*ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
+				UCarUpdateEvent et = new UCarUpdateEvent(vehicle, newEvent.getTravelVector().clone(), null, newEvent.getDir()); //Clone of the other event, except no player object attached
+				et.setRead(newEvent.getReadCount()); //Make sure it IS acceleration clone (With correct variable values)
+				UEntityMeta.setMetadata(vehicle, "car.vec", new StatValue(et, UCars.plugin)); //Update the meta on the car
+				/*ucars.plugin.getServer().getPluginManager().callEvent(newEvent); //Actually handle the uCarUpdateEvent
 */
-				if(!ucars.fireUpdateEvent){
-					onUcarUpdate(evt);
+				if(!UCars.fireUpdateEvent){
+					onUcarUpdate(newEvent);
 				}
 				else {
-					ucars.plugin.getServer().getPluginManager().callEvent(evt);
+					UCars.plugin.getServer().getPluginManager().callEvent(newEvent);
 				}
 				/*return;*/
 			}
 		}	
 		//Everything below this (in this method) is executed EVERY MC vehicle update (every tick) and every ucar update
 	
-		Block normalblock = vehicle.getLocation().getBlock();
+		Block normalBlock = vehicle.getLocation().getBlock();
 
 		Player player = null;
 		if (driven) {
@@ -546,37 +546,37 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		
-		Vector vel = car.getVelocity();
+		Vector velocity = car.getVelocity();
 		
 		if (car.getVelocity().getY() > 0.1
 				&& !UEntityMeta.hasMetadata(car, "car.falling")
-				&& !UEntityMeta.hasMetadata(car, "car.ascending")) { // Fix jumping bug (Where car just flies up infinitely high when clipping a block)
+				&& !UEntityMeta.hasMetadata(car, "car.ascending")) { // Fix jumping bug (Where car just flies up infinitely high when clipping acceleration block)
 														// in most occasions
 			if (UEntityMeta.hasMetadata(car, "car.jumping")) {
-				/*vel.setY(2.5);*/
+				/*velocity.setY(2.5);*/
 				UEntityMeta.removeMetadata(car, "car.jumping");
 			} else if (UEntityMeta.hasMetadata(car, "car.jumpFull")) {
-				// Jumping a full block
+				// Jumping acceleration full block
 				if (car.getVelocity().getY() > 10) {
-					vel.setY(5);
+					velocity.setY(5);
 				}
 				UEntityMeta.removeMetadata(car, "car.jumpFull");
 			} else {
-				vel.setY(0);
+				velocity.setY(0);
 			}
-			car.setVelocity(vel);
+			car.setVelocity(velocity);
 		}
 		
 		// Make jumping work when not moving
 		// Calculate jumping gravity
 		if(UEntityMeta.hasMetadata(car, "car.jumpUp")){
-			double amt = (Double) UEntityMeta.getMetadata(car, "car.jumpUp").get(0).value();
+			double amount = (Double) UEntityMeta.getMetadata(car, "car.jumpUp").get(0).value();
 			UEntityMeta.removeMetadata(car, "car.jumpUp");
-			if(amt >= 1.5){
-				double y = amt * 0.1;
-				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(amt-y, plugin));
-				vel.setY(y);
-				car.setVelocity(vel);
+			if(amount >= 1.5){
+				double y = amount * 0.1;
+				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(amount-y, plugin));
+				velocity.setY(y);
+				car.setVelocity(velocity);
 				return; //We don't want any further calculations
 			}
 			else{ //At the peak of ascent
@@ -591,9 +591,9 @@ public class uCarsListener implements Listener {
 			UEntityMeta.removeMetadata(car, "car.falling");
 			if ((gravity <= 0.6)) {
 				UEntityMeta.setMetadata(car, "car.falling", new StatValue(
-						newGravity, ucars.plugin));
-				vel.setY(-(gravity * 1.333 + 0.2d));
-				car.setVelocity(vel);
+						newGravity, UCars.plugin));
+				velocity.setY(-(gravity * 1.333 + 0.2d));
+				car.setVelocity(velocity);
 			}
 		}
 
@@ -601,9 +601,9 @@ public class uCarsListener implements Listener {
 		CarHealthData health = getCarHealthHandler(car);
 		Boolean recalculateHealth = false;
 		// Calculate health based on location
-		if (normalblock.getType().equals(Material.WATER)
-				|| normalblock.getType().equals(Material.STATIONARY_WATER)) {
-			double damage = damage_water;
+		if (normalBlock.getType().equals(Material.WATER)
+				|| normalBlock.getType().equals(Material.STATIONARY_WATER)) {
+			double damage = damageWater;
 			if (damage > 0) {
 				if (driven) {
 					double max = defaultHealth;
@@ -623,9 +623,9 @@ public class uCarsListener implements Listener {
 				recalculateHealth = true;
 			}
 		}
-		if (normalblock.getType().equals(Material.LAVA)
-				|| normalblock.getType().equals(Material.STATIONARY_LAVA)) {
-			double damage = damage_lava;
+		if (normalBlock.getType().equals(Material.LAVA)
+				|| normalBlock.getType().equals(Material.STATIONARY_LAVA)) {
+			double damage = damageLava;
 			if (damage > 0) {
 				if (driven) {
 					double max = defaultHealth;
@@ -649,33 +649,33 @@ public class uCarsListener implements Listener {
 			updateCarHealthHandler(car, health);
 		}
 
-		float a = 1;
-		if(event instanceof ucarUpdateEvent && ucars.smoothDrive){ //If acceleration is enabled
-			a = ControlInput.getAccel(((ucarUpdateEvent)event).getPlayer(), ((ucarUpdateEvent)event).getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
-			CarDirection driveDir = ControlInput.getCurrentDriveDir(player);
-			if(driveDir.equals(CarDirection.BACKWARDS)){
-				a *= 0.2; //0.2 speed backwards
+		float acceleration = 1;
+		if(event instanceof UCarUpdateEvent && UCars.smoothDrive){ //If acceleration is enabled
+			acceleration = ControlInput.getAccel(((UCarUpdateEvent)event).getPlayer(), ((UCarUpdateEvent)event).getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
+			CarDirection direction = ControlInput.getCurrentDriveDir(player);
+			if(direction.equals(CarDirection.BACKWARDS)){
+				acceleration *= 0.2; //0.2 speed backwards
 			}
-			travel.setX(travel.getX() * a); //Multiple only x
-			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
+			travel.setX(travel.getX() * acceleration); //Multiple only x
+			travel.setZ(travel.getZ() * acceleration); //and z with it (No y acceleration)
 		}
-		Vector dirVec = travel.clone().setY(0).normalize();
+		Vector directionVector = travel.clone().setY(0).normalize();
 
-		if(dirVec.lengthSquared() > 0.01 /*dirVec.lengthSquared() > 0.1 && Math.abs(a) > 0.2 && *//*event.getDir() != null && !event.getDir().equals(CarDirection.NONE)*/){
+		if(directionVector.lengthSquared() > 0.01 /*directionVector.lengthSquared() > 0.1 && Math.abs(acceleration) > 0.2 && *//*event.getDir() != null && !event.getDir().equals(CarDirection.NONE)*/){
 			Location dirLoc = new Location(car.getWorld(), 0, 0, 0); //Make sure car always faces the RIGHT "forwards"
-			if(event instanceof ucarUpdateEvent && ((ucarUpdateEvent) event).getDir().equals(CarDirection.BACKWARDS)){
-				dirVec = dirVec.multiply(-1);
+			if(event instanceof UCarUpdateEvent && ((UCarUpdateEvent) event).getDir().equals(CarDirection.BACKWARDS)){
+				directionVector = directionVector.multiply(-1);
 			}
 			CarDirection driveDir = ControlInput.getCurrentDriveDir(player);
 			if(driveDir.equals(CarDirection.BACKWARDS)){
-				dirVec = dirVec.multiply(-1);
+				directionVector = directionVector.multiply(-1);
 			}
-			dirLoc.setDirection(dirVec);
+			dirLoc.setDirection(directionVector);
 			float yaw = dirLoc.getYaw()+90;
 			/*if(event.getDir().equals(CarDirection.BACKWARDS)){
 				yaw += 180;
 			}*/
-			if(a < 0){
+			if(acceleration < 0){
 				yaw -= 180;
 			}
 			while(yaw < 0){
@@ -709,7 +709,7 @@ public class uCarsListener implements Listener {
 	 * Performs the actually mechanic for making the cars move
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onUcarUpdate(ucarUpdateEvent event) {
+	public void onUcarUpdate(UCarUpdateEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
@@ -718,15 +718,15 @@ public class uCarsListener implements Listener {
 		
 		if(event.getReadCount() > 2){
 			UEntityMeta.removeMetadata(vehicle, "car.vec");
-			vehicle.removeMetadata("car.vec", ucars.plugin);
+			vehicle.removeMetadata("car.vec", UCars.plugin);
 		}
 		
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
-		Block underblock = under.getBlock();
-		Block underunderblock = underblock.getRelative(BlockFace.DOWN);
-		Block normalblock = vehicle.getLocation().getBlock();
-		// Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
+		Block underBlock = under.getBlock();
+		Block underUnderBlock = underBlock.getRelative(BlockFace.DOWN);
+		Block normalBlock = vehicle.getLocation().getBlock();
+		// Block up = normalBlock.getLocation().add(0, 1, 0).getBlock();
 		final Player player = event.getPlayer();
 		if (player == null) {
 			return;
@@ -743,7 +743,7 @@ public class uCarsListener implements Listener {
 		try {
 			if (licenseEnabled
 					&& !plugin.licensedPlayers.contains(player.getName())) {
-				player.sendMessage(ucars.colors.getError()
+				player.sendMessage(UCars.colors.getError()
 						+ Lang.get("lang.licenses.noLicense"));
 				return;
 			}
@@ -764,7 +764,7 @@ public class uCarsListener implements Listener {
 		
 		/*Block next = car.getLocation().clone().add(event.getTravelVector().clone().setY(0)).getBlock();
 		Block underNext = next.getRelative(BlockFace.DOWN);
-		Block underunderNext = next.getRelative(BlockFace.DOWN, 2);*/
+		Block underUnderNext = next.getRelative(BlockFace.DOWN, 2);*/
 		
 		CarHealthData health = this.getCarHealthHandler(car);
 		Boolean recalculateHealth = false;
@@ -787,41 +787,41 @@ public class uCarsListener implements Listener {
 		
 		// Calculate road blocks
 		if (roadBlocksEnabled) {
-			/*Location loc = car.getLocation().getBlock()
+			/*Location location = car.getLocation().getBlock()
 					.getRelative(BlockFace.DOWN).getLocation();*/
-			if(!plugin.isBlockEqualToConfigIds(roadBlocks, underblock)){
-				//Not a road block being driven on, so don't move
+			if(!plugin.isBlockEqualToConfigIds(roadBlocks, underBlock)){
+				//Not acceleration road block being driven on, so don't move
 				return;
 			}
 		}
 		
-		Location loc = car.getLocation();
-		if (!ucars.playersIgnoreTrafficLights && atTrafficLight(car, underblock, underunderblock, loc)){
-			return; //Being told to wait at a traffic light, don't move
+		Location location = car.getLocation();
+		if (!UCars.playersIgnoreTrafficLights && atTrafficLight(car, underBlock, underUnderBlock, location)){
+			return; //Being told to wait at acceleration traffic light, don't move
 		}
 		
 		// Calculate default effect blocks
 		if (effectBlocksEnabled) {
 			if (plugin.isBlockEqualToConfigIds(blockBoost,
-					underblock)
+					underBlock)
 					|| plugin.isBlockEqualToConfigIds(
-							blockBoost, underunderblock)) {
+							blockBoost, underUnderBlock)) {
 				carBoost(player.getName(), 20, 6000,
 						defaultSpeed);
 			}
 			if (plugin.isBlockEqualToConfigIds(
-					highBlockBoost, underblock)
+					highBlockBoost, underBlock)
 					|| plugin.isBlockEqualToConfigIds(
-							highBlockBoost, underunderblock)) {
+							highBlockBoost, underUnderBlock)) {
 				carBoost(player.getName(), 50, 8000,
 						defaultSpeed);
 			}
 			if (plugin.isBlockEqualToConfigIds(
-					resetBlockBoost, underblock)
+					resetBlockBoost, underBlock)
 					|| plugin
 							.isBlockEqualToConfigIds(
 									resetBlockBoost,
-									underunderblock)) {
+									underUnderBlock)) {
 				ResetCarBoost(player.getName(), car,
 						defaultSpeed);
 			}
@@ -831,42 +831,42 @@ public class uCarsListener implements Listener {
 															// fixes
 															// controls for
 															// 1.6
-		float a = 1;
-		if(ucars.smoothDrive){ //If acceleration is enabled
-			a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
+		float acceleration = 1;
+		if(UCars.smoothDrive){ //If acceleration is enabled
+			acceleration = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
 			CarDirection driveDir = ControlInput.getCurrentDriveDir(event.getPlayer());
 			if(driveDir.equals(CarDirection.BACKWARDS)){
-				a *= 0.2; //0.2 speed backwards
+				acceleration *= 0.2; //0.2 speed backwards
 			}
-			travel.setX(travel.getX() * a); //Multiple only x
-			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
+			travel.setX(travel.getX() * acceleration); //Multiple only x
+			travel.setZ(travel.getZ() * acceleration); //and z with it (No y acceleration)
 		}
 		
-		Vector dirVec = travel.clone().setY(0).normalize();
+		Vector directionVector = travel.clone().setY(0).normalize();
 		/*try {
-			dirVec = (Vector) (car.hasMetadata("ucarsSteeringDir") ? car.getMetadata("ucarsSteeringDir").get(0).value() : travel.clone().normalize());
+			directionVector = (Vector) (car.hasMetadata("ucarsSteeringDir") ? car.getMetadata("ucarsSteeringDir").get(0).value() : travel.clone().normalize());
 		} catch (Exception e2) {
-			dirVec = travel.clone().normalize();
+			directionVector = travel.clone().normalize();
 		}*/
 
 		
 		double multiplier = defaultSpeed;
 		try {
-			if (ucars.carBoosts.containsKey(player.getName())) { // Use the
+			if (UCars.carBoosts.containsKey(player.getName())) { // Use the
 																	// boost
 																	// allocated
-				multiplier = ucars.carBoosts.get(player.getName());
+				multiplier = UCars.carBoosts.get(player.getName());
 			}
 		} catch (Exception e1) {
 			return;
 		}
 		
-		String underMat = under.getBlock().getType().name().toUpperCase();
-		int underdata = under.getBlock().getData();
+		String underMaterial = under.getBlock().getType().name().toUpperCase();
+		int underData = under.getBlock().getData();
 		// calculate speedmods
-		String key = underMat+":"+underdata;
+		String key = underMaterial+":"+underData;
 		if(speedMods.containsKey(key)){
-			if(!ucars.carBoosts.containsKey(player.getName())){
+			if(!UCars.carBoosts.containsKey(player.getName())){
 				multiplier = speedMods.get(key);
 			}
 			else{
@@ -881,30 +881,30 @@ public class uCarsListener implements Listener {
 		travel = travel.setZ(travel.getZ()*multiplier); 
 		if (usePerms) {
 			if (!player.hasPermission("ucars.cars")) {
-				player.sendMessage(ucars.colors.getInfo()
+				player.sendMessage(UCars.colors.getInfo()
 						+ Lang.get("lang.messages.noDrivePerm"));
 				return;
 			}
 		}
 		
-		/*if (normalblock.getType() != Material.AIR //Air
-				&& normalblock.getType() != Material.WATER //Water
-				&& normalblock.getType() != Material.STATIONARY_WATER //Water
-				&& normalblock.getType() != Material.STEP //Slab
-				&& normalblock.getType() != Material.DOUBLE_STEP //Double slab
-				&& normalblock.getType() != Material.LONG_GRASS //Long grass
-				&& !normalblock.getType().name().toLowerCase()
+		/*if (normalBlock.getType() != Material.AIR //Air
+				&& normalBlock.getType() != Material.WATER //Water
+				&& normalBlock.getType() != Material.STATIONARY_WATER //Water
+				&& normalBlock.getType() != Material.STEP //Slab
+				&& normalBlock.getType() != Material.DOUBLE_STEP //Double slab
+				&& normalBlock.getType() != Material.LONG_GRASS //Long grass
+				&& !normalBlock.getType().name().toLowerCase()
 						.contains("stairs")) {
-			// Stuck in a block
+			// Stuck in acceleration block
 			car.setVelocity(new Vector(0, 0.5, 0));
 		}*/
 		
 		Location before = car.getLocation();
-		//float dir = player.getLocation().getYaw();
-		float dir = car.getLocation().clone().setDirection(travel).getYaw();
-		BlockFace faceDir = ClosestFace.getClosestFace(dir);
-		// before.add(faceDir.getModX(), faceDir.getModY(),
-		// faceDir.getModZ());
+		//float direction = player.getLocation().getYaw();
+		float direction = car.getLocation().clone().setDirection(travel).getYaw();
+		BlockFace face = ClosestFace.getClosestFace(direction);
+		// before.add(face.getModX(), face.getModY(),
+		// face.getModZ());
 
 		//Read the vehicle length if it exists
 		double length = 0;
@@ -922,26 +922,26 @@ public class uCarsListener implements Listener {
 
 		double fx = travel.getX()*1;
 		if (Math.abs(fx) > 1) {
-			fx = faceDir.getModX();
+			fx = face.getModX();
 		}
 		double fz = travel.getZ()*1;
 		if (Math.abs(fz) > 1) {
-			fz = faceDir.getModZ();
+			fz = face.getModZ();
 		}
 
 		//Compute unit vector in car direction of travel
-		Vector unitVec = new Vector(faceDir.getModX(),0,faceDir.getModZ());
-		if(unitVec.lengthSquared() > 1){
-			unitVec.multiply(1/(double)Math.sqrt(2));
+		Vector unitVector = new Vector(face.getModX(),0,face.getModZ());
+		if(unitVector.lengthSquared() > 1){
+			unitVector.multiply(1/(double)Math.sqrt(2));
 		}
 
-		Vector faceDirVec = new Vector(fx, faceDir.getModY(), fz);
-		before=before.add(faceDirVec);
+		Vector faceDirVector = new Vector(fx, face.getModY(), fz);
+		before=before.add(faceDirVector);
 		//Add the length of the car in so that we are able to climb up blocks with an entity that has length
-		Vector toRightOfFaceDir = unitVec.clone().crossProduct(new Vector(0,1,0));
-		before=before.add(unitVec.clone().multiply(length*0.5));
-		Location frontRight = before.clone().add(unitVec.clone().multiply(length*0.5));
-		Location frontLeft = before.clone().add(unitVec.clone().multiply(length*-0.5));
+		Vector toRightOfFaceDir = unitVector.clone().crossProduct(new Vector(0,1,0));
+		before=before.add(unitVector.clone().multiply(length*0.5));
+		Location frontRight = before.clone().add(unitVector.clone().multiply(length*0.5));
+		Location frontLeft = before.clone().add(unitVector.clone().multiply(length*-0.5));
 		Block block = before.getBlock(); //Block we're driving into
 		Block frontRightInFront = frontRight.getBlock();
 		Block frontLeftInFront = frontLeft.getBlock();
@@ -961,12 +961,12 @@ public class uCarsListener implements Listener {
 				&& !(block.getType().name().toLowerCase().contains("step"))
 				*//*&& !(above.getType().name().toLowerCase().contains("step"))*//*)
 		){
-			*//*ControlInput.setAccel(player, 0); //They hit a wall head on*//*
+			*//*ControlInput.setAccel(player, 0); //They hit acceleration wall head on*//*
 		}*/
 		
 		// Calculate collision health
 		if (block.getType().equals(Material.CACTUS)) {
-			double damage = damage_cactus;
+			double damage = damageCactus;
 			if (damage > 0) {
 				double max = defaultHealth;
 				double left = health.getHealth() - damage;
@@ -990,11 +990,11 @@ public class uCarsListener implements Listener {
 				&& !fuelUseItems
 				&& !player.hasPermission(fuelBypassPerm)) {
 			double fuel = 0;
-			if (ucars.fuel.containsKey(player.getName())) {
-				fuel = ucars.fuel.get(player.getName());
+			if (UCars.fuel.containsKey(player.getName())) {
+				fuel = UCars.fuel.get(player.getName());
 			}
 			if (fuel < 0.1) {
-				player.sendMessage(ucars.colors.getError()
+				player.sendMessage(UCars.colors.getError()
 						+ Lang.get("lang.fuel.empty"));
 				return;
 			}
@@ -1002,7 +1002,7 @@ public class uCarsListener implements Listener {
 			if (amount == 10) {
 				fuel = fuel - 0.1;
 				fuel = (double) Math.round(fuel * 10) / 10;
-				ucars.fuel.put(player.getName(), fuel);
+				UCars.fuel.put(player.getName(), fuel);
 			}
 		}
 		else if (fuelEnabled
@@ -1010,15 +1010,15 @@ public class uCarsListener implements Listener {
 				&& !player.hasPermission(fuelBypassPerm)) {
 			// item fuel - Not for laggy servers!!!
 			double fuel = 0;
-			ArrayList<ItemStack> items = plugin.ufuelitems;
-			Inventory inv = player.getInventory();
+			ArrayList<ItemStack> items = plugin.UFuelItems;
+			Inventory inventory = player.getInventory();
 			for (ItemStack item : items) {
-				if (inv.contains(item.getType(), 1)) {
+				if (inventory.contains(item.getType(), 1)) {
 					fuel = fuel + 0.1;
 				}
 			}
 			if (fuel < 0.1) {
-				player.sendMessage(ucars.colors.getError()
+				player.sendMessage(UCars.colors.getError()
 						+ Lang.get("lang.fuel.empty"));
 				return;
 			}
@@ -1028,8 +1028,8 @@ public class uCarsListener implements Listener {
 				Boolean taken = false;
 				Boolean last = false;
 				int toUse = 0;
-				for (int i = 0; i < inv.getContents().length; i++) {
-					ItemStack item = inv.getItem(i);
+				for (int i = 0; i < inventory.getContents().length; i++) {
+					ItemStack item = inventory.getItem(i);
 					Boolean ignore = false;
 					try {
 						item.getType();
@@ -1050,13 +1050,13 @@ public class uCarsListener implements Listener {
 					}
 				}
 				if (last) {
-					inv.setItem(toUse, new ItemStack(Material.AIR));
+					inventory.setItem(toUse, new ItemStack(Material.AIR));
 				}
 			}
 		}
 		
 		/*if (travel.getY() < 0) { //Custom gravity
-			double a1 = multiplier*a;
+			double a1 = multiplier*acceleration;
 			if(a1 < 1){
 				a1 = 1;
 			}
@@ -1070,42 +1070,42 @@ public class uCarsListener implements Listener {
 			travel.setY(newy);
 		}*/
 		
-		Material bType = block.getType();
-		int bData = block.getData();
+		Material blockType = block.getType();
+		int blockData = block.getData();
 		Boolean fly = false; // Fly is the 'easter egg' slab elevator
-		if (normalblock.getRelative(faceDir).getType() == Material.STEP) {
+		if (normalBlock.getRelative(face).getType() == Material.STEP) {
 			// If looking at slabs
 			fly = true;
 		}
 		/*
 		 * if(bbb.getType()==Material.STEP && !(bbb.getData() != 0)){ //If
-		 * in a slab block fly = true; }
+		 * in acceleration slab block fly = true; }
 		 */
 		if (effectBlocksEnabled) { //Has to be in this order for things to function properly - Cannot be merged with earlier effect block handling
 			if (plugin.isBlockEqualToConfigIds(jumpBlock,
-					underblock)
+					underBlock)
 					|| plugin.isBlockEqualToConfigIds(
-							jumpBlock, underunderblock)) {
-				double y = uCar_jump_amount;
-				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(uCar_jump_amount, plugin));
+							jumpBlock, underUnderBlock)) {
+				double y = UCarJumpAmount;
+				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(UCarJumpAmount, plugin));
 				travel.setY(y);
 				car.setVelocity(travel);
 			}
 			if (plugin.isBlockEqualToConfigIds(
-					teleportBlock, underblock)
+					teleportBlock, underBlock)
 					|| plugin.isBlockEqualToConfigIds(
-							teleportBlock, underunderblock)) {
+							teleportBlock, underUnderBlock)) {
 				// teleport the player
-				Sign s = null;
-				if (underunderblock.getState() instanceof Sign) {
-					s = (Sign) underunderblock.getState();
+				Sign sign = null;
+				if (underUnderBlock.getState() instanceof Sign) {
+					sign = (Sign) underUnderBlock.getState();
 				}
-				if (underunderblock.getRelative(BlockFace.DOWN).getState() instanceof Sign) {
-					s = (Sign) underunderblock.getRelative(BlockFace.DOWN)
+				if (underUnderBlock.getRelative(BlockFace.DOWN).getState() instanceof Sign) {
+					sign = (Sign) underUnderBlock.getRelative(BlockFace.DOWN)
 							.getState();
 				}
-				if (s != null) {
-					String[] lines = s.getLines();
+				if (sign != null) {
+					String[] lines = sign.getLines();
 					if (lines[0].equalsIgnoreCase("[Teleport]")) {
 						Boolean raceCar = false;
 						if (car.hasMetadata("kart.racing")
@@ -1119,13 +1119,13 @@ public class uCarsListener implements Listener {
 						
 						car.remove();
 						
-						final Vehicle ca = car;
+						final Vehicle finalCar = car;
 						Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 
 							@Override
 							public void run() {
-								if(ca != null){
-									ca.remove(); //For uCarsTrade
+								if(finalCar != null){
+									finalCar.remove(); //For uCarsTrade
 								}
 								return;
 							}}, 2l);
@@ -1157,35 +1157,35 @@ public class uCarsListener implements Listener {
 									UEntityMeta.removeMetadata(player, "car.stayIn");
 								}
 							}
-							Location toTele = new Location(s.getWorld(), x,
+							Location toTele = new Location(sign.getWorld(), x,
 									y, z);
 							Chunk ch = toTele.getChunk();
 							if (ch.isLoaded()) {
 								ch.load(true);
 							}
-							car = (Vehicle) s.getWorld().spawnEntity(
+							car = (Vehicle) sign.getWorld().spawnEntity(
 									toTele, EntityType.MINECART);
-							final Vehicle v = car;
+							final Vehicle vehicule = car;
 							UEntityMeta.setMetadata(car, "carhealth", health);
 							if (raceCar) {
 								UEntityMeta.setMetadata(car, "kart.racing", new StatValue(null, plugin));
 							}
-							uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
+							uCarRespawnEvent newEvent = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 									CarRespawnReason.TELEPORT);
-							plugin.getServer().getPluginManager().callEvent(evnt);
-							if(evnt.isCancelled()){
+							plugin.getServer().getPluginManager().callEvent(newEvent);
+							if(newEvent.isCancelled()){
 								car.remove();
 							}
 							else{
-								player.sendMessage(ucars.colors.getTp()
+								player.sendMessage(UCars.colors.getTp()
 										+ "Teleporting...");
 								car.setPassenger(player);
-								final Vehicle ucar = car;
+								final Vehicle finalCar1 = car;
 								Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 
 									@Override
 									public void run() {
-										ucar.setPassenger(player); //For the sake of uCarsTrade
+										finalCar1.setPassenger(player); //For the sake of uCarsTrade
 										return;
 									}}, 2l);
 								car.setVelocity(travel);
@@ -1195,7 +1195,7 @@ public class uCarsListener implements Listener {
 										player.setMetadata("car.stayIn", val);
 									}
 								}
-								plugin.getAPI().updateUcarMeta(carId,
+								plugin.getAPI().updateUCarMeta(carId,
 										car.getUniqueId());
 							}
 						}
@@ -1204,12 +1204,12 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		// actually jump up a block if needed:
-		Location theNewLoc = block.getLocation();
-		Location bidUpLoc = block.getLocation().add(0, 1, 0);
-		Material bidU = bidUpLoc.getBlock().getType();
+		// actually jump up acceleration block if needed:
+		Location newLocation = block.getLocation();
+		Location newLocationUp = block.getLocation().add(0, 1, 0);
+		Material upBlockMaterial = newLocationUp.getBlock().getType();
 		Boolean cont = true;
-		// check it's not a barrier
+		// check it's not acceleration barrier
 		cont = !plugin.isBlockEqualToConfigIds(barriers, block) && !plugin.isBlockEqualToConfigIds(barriers, frontLeftInFront) && !plugin.isBlockEqualToConfigIds(barriers, frontRightInFront);
 		
 		Boolean inStairs = false;
@@ -1220,18 +1220,18 @@ public class uCarsListener implements Listener {
 		if (UEntityMeta.hasMetadata(car, "car.ascending")) {
 			UEntityMeta.removeMetadata(car, "car.ascending");
 		}
-		//player.sendMessage(bType+" "+faceDir+" "+fx+" "+fz);
+		//player.sendMessage(blockType+" "+face+" "+fx+" "+fz);
 		// Make cars jump if needed
 		if (inStairs ||
-				 (!ignoreJump.contains(bType.name().toUpperCase()) && cont && modY)) { //Should jump
+				 (!ignoreJump.contains(blockType.name().toUpperCase()) && cont && modY)) { //Should jump
 /*			player.sendMessage("Obstruction ahead");
-			player.sendMessage("above: "+bidU);*/
-			if (bidU == Material.AIR || bidU == Material.LAVA 
-					|| bidU == Material.STATIONARY_LAVA || bidU == Material.WATER
-					|| bidU == Material.STATIONARY_WATER /*|| bidU == Material.STEP */
-					|| bidU == Material.CARPET
-					/*|| bidU == Material.DOUBLE_STEP*/ || inStairs) { //Clear air above
-				theNewLoc.add(0, 1.5d, 0);
+			player.sendMessage("above: "+upBlockMaterial);*/
+			if (upBlockMaterial == Material.AIR || upBlockMaterial == Material.LAVA
+					|| upBlockMaterial == Material.STATIONARY_LAVA || upBlockMaterial == Material.WATER
+					|| upBlockMaterial == Material.STATIONARY_WATER /*|| upBlockMaterial == Material.STEP */
+					|| upBlockMaterial == Material.CARPET
+					/*|| upBlockMaterial == Material.DOUBLE_STEP*/ || inStairs) { //Clear air above
+				newLocation.add(0, 1.5d, 0);
 				Boolean calculated = false;
 				double y = 1.1;
 				if (block.getType().name().toLowerCase().contains("step")) {
@@ -1239,7 +1239,7 @@ public class uCarsListener implements Listener {
 					y = 1.2;
 				}
 				if (carBlock.name().toLowerCase().contains("step")) { // In
-																		// a
+																		// acceleration
 																		// step
 																		// block
 																		// and
@@ -1252,7 +1252,7 @@ public class uCarsListener implements Listener {
 				if (carBlock.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
 						// ||
-						// underblock.getType().name().toLowerCase().contains(Pattern.quote("stairs"))
+						// underBlock.getType().name().toLowerCase().contains(Pattern.quote("stairs"))
 						|| block.getType().name().toLowerCase()
 								.contains(Pattern.quote("stairs"))
 						|| inStairs) {
@@ -1279,7 +1279,7 @@ public class uCarsListener implements Listener {
 			}
 			if (fly && cont) {
 				// Make the car ascend (easter egg, slab elevator)
-				travel.setY(0.1); // Make a little easier
+				travel.setY(0.1); // Make acceleration little easier
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Move the car and adjust vector to fit car stats
@@ -1288,7 +1288,7 @@ public class uCarsListener implements Listener {
 		} else {
 			if (fly) {
 				// Make the car ascend (easter egg, slab elevator)
-				travel.setY(0.1); // Make a little easier
+				travel.setY(0.1); // Make acceleration little easier
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Move the car and adjust vector to fit car stats
@@ -1311,14 +1311,14 @@ public class uCarsListener implements Listener {
 		if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
 			return;
 		}
-		Player p = (Player) event.getEntity();
-		if (inACar(p.getName())) {
-			Vector vel = p.getVehicle().getVelocity();
+		Player player = (Player) event.getEntity();
+		if (inACar(player.getName())) {
+			Vector vel = player.getVehicle().getVelocity();
 			if (!(vel.getY() > -0.1 && vel.getY() < 0.1)) {
 				event.setCancelled(true);
 			} /*else {
 				try {
-					p.damage(event.getDamage());
+					player.damage(event.getDamage());
 				} catch (Exception e) {
 					// Damaging failed
 				}
@@ -1336,24 +1336,24 @@ public class uCarsListener implements Listener {
 		if(event.isCancelled()){
 			return;
 		}
-		Vehicle veh = event.getVehicle();
-		if (!(veh instanceof Vehicle)) {
+		Vehicle vehicle = event.getVehicle();
+		if (!(vehicle instanceof Vehicle)) {
 			return;
 		}
-		final Vehicle cart = (Vehicle) veh;
+		final Vehicle cart = (Vehicle) vehicle;
 		if (!isACar(cart)) {
 			return;
 		}
-		Entity ent = event.getEntity(); //copCar
-		if(((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npcvillager"))
-				|| UEntityMeta.hasMetadata(cart, "trade.npc") && UEntityMeta.hasMetadata(ent, "trade.npcvillager"))
-				|| ((cart.hasMetadata("trade.npc") && ent.getVehicle() != null && ent.getVehicle().hasMetadata("trade.npc"))
-						&& UEntityMeta.hasMetadata(cart, "trade.npc") && ent.getVehicle() != null && UEntityMeta.hasMetadata(ent.getVehicle(), "trade.npc"))){
+		Entity entity = event.getEntity(); //copCar
+		if(((cart.hasMetadata("trade.npc") && entity.hasMetadata("trade.npcvillager"))
+				|| UEntityMeta.hasMetadata(cart, "trade.npc") && UEntityMeta.hasMetadata(entity, "trade.npcvillager"))
+				|| ((cart.hasMetadata("trade.npc") && entity.getVehicle() != null && entity.getVehicle().hasMetadata("trade.npc"))
+						&& UEntityMeta.hasMetadata(cart, "trade.npc") && entity.getVehicle() != null && UEntityMeta.hasMetadata(entity.getVehicle(), "trade.npc"))){
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
 		}
-		if(UEntityMeta.hasMetadata(ent, "IGNORE_COLLISIONS")){
+		if(UEntityMeta.hasMetadata(entity, "IGNORE_COLLISIONS")){
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
@@ -1372,11 +1372,11 @@ public class uCarsListener implements Listener {
 		while (passenger.getPassenger() != null) {
 			passenger = passenger.getPassenger();
 		}
-		if(passenger.equals(ent) || cart.getPassengers().contains(ent)){
+		if(passenger.equals(entity) || cart.getPassengers().contains(entity)){
 			return; //Player being hit is in the car
 		}
 		
-		if(ent.hasMetadata("copCar") || UEntityMeta.hasMetadata(ent, "copCar") || (ent.getVehicle() != null && (ent.getVehicle().hasMetadata("copCar") || UEntityMeta.hasMetadata(ent.getVehicle(), "copCar")))){
+		if(entity.hasMetadata("copCar") || UEntityMeta.hasMetadata(entity, "copCar") || (entity.getVehicle() != null && (entity.getVehicle().hasMetadata("copCar") || UEntityMeta.hasMetadata(entity.getVehicle(), "copCar")))){
 			if(!(passenger instanceof Player)){
 				event.setCancelled(true);
 				event.setCollisionCancelled(false);
@@ -1384,22 +1384,22 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		if(UEntityMeta.hasMetadata(ent, "hitByLast")){
+		if(UEntityMeta.hasMetadata(entity, "hitByLast")){
 			try {
-				long l = (Long) UEntityMeta.getMetadata(ent, "hitByLast").get(0).value();
+				long l = (Long) UEntityMeta.getMetadata(entity, "hitByLast").get(0).value();
 				long pastTime = System.currentTimeMillis() - l;
 				if(pastTime < 500){
 					return; //Don't get hit by more than once at a time
 				}
 				else {
-					UEntityMeta.removeMetadata(ent, "hitByLast");
+					UEntityMeta.removeMetadata(entity, "hitByLast");
 				}
 			} catch (Exception e) {
-				UEntityMeta.removeMetadata(ent, "hitByLast");
+				UEntityMeta.removeMetadata(entity, "hitByLast");
 			}
 		}
-		UEntityMeta.removeMetadata(ent, "hitByLast");
-		UEntityMeta.setMetadata(ent, "hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
+		UEntityMeta.removeMetadata(entity, "hitByLast");
+		UEntityMeta.setMetadata(entity, "hitByLast", new StatValue(System.currentTimeMillis(), UCars.plugin));
 		
 		/*double accel = 1;
 		if(passenger instanceof Player){
@@ -1408,33 +1408,33 @@ public class uCarsListener implements Listener {
 		else {
 			accel = UEntityMeta.hasMetadata(cart, "currentlyStopped") ? 0:1;
 		}*/
-		Vector vel = cart.getVelocity();
-		double speed = vel.length() * 1.6; /*
+		Vector velocity = cart.getVelocity();
+		double speed = velocity.length() * 1.6; /*
 		if(passenger instanceof Villager){ //NPC car from UT
 			speed = cart.getVelocity().length()*1.6;
 		}*/
+
+		double damage = hitByCrashDamage;
+		double passengerDamage = (damage * speed * 2);
+		if(passengerDamage < 1){
+			passengerDamage = 1;
+		}
+		if(passengerDamage > (hitByCrashDamage * 1.5)){
+			passengerDamage = hitByCrashDamage * 1.5;
+		}
+		if(passengerDamage > 8){
+			passengerDamage = 8;
+		}
 		
-		double damage = hitby_crash_damage;
-		double pDmg = (damage * speed * 2);
-		if(pDmg < 1){
-			pDmg = 1;
-		}
-		if(pDmg > (hitby_crash_damage * 1.5)){
-			pDmg = hitby_crash_damage * 1.5;
-		}
-		if(pDmg > 8){
-			pDmg = 8;
-		}
-		
-		Entity driver = getDrivingPassengerOfCar(veh);
+		Entity driver = getDrivingPassengerOfCar(vehicle);
 		
 		if (speed > 0) {
 			CarHealthData health = getCarHealthHandler(cart);
-			double dmg = crash_damage;
-			if (dmg > 0) {
+			double damage1 = crashDamage;
+			if (damage1 > 0) {
 				if (cart.getPassenger() instanceof Player) {
 					double max = defaultHealth;
-					double left = health.getHealth() - dmg;
+					double left = health.getHealth() - damage1;
 					ChatColor color = ChatColor.YELLOW;
 					if (left > (max * 0.66)) {
 						color = ChatColor.GREEN;
@@ -1443,78 +1443,78 @@ public class uCarsListener implements Listener {
 						color = ChatColor.RED;
 					}
 					((Player) cart.getPassenger())
-							.sendMessage(ChatColor.RED + "-" + ((int)dmg) + "[crash]"
+							.sendMessage(ChatColor.RED + "-" + ((int)damage1) + "[crash]"
 									+ color + " (" + ((int)left) + ")");
 				}
-				health.damage(dmg, cart);
+				health.damage(damage1, cart);
 			}
 			updateCarHealthHandler(cart, health);
 		}
 		if (speed <= 0) {
 			return;
 		}
-		if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
+		if (!UCars.config.getBoolean("general.cars.hitBy.enable")) {
 			return;
 		}
-		if (ucars.config.getBoolean("general.cars.hitBy.enableMonsterDamage")) {
-			if (ent instanceof Monster || (ucars.config.getBoolean("general.cars.hitBy.enableAllMonsterDamage") && ent instanceof Damageable)) {
-				if(ent instanceof Villager && ent.getVehicle() != null && passenger instanceof Villager){
+		if (UCars.config.getBoolean("general.cars.hitBy.enableMonsterDamage")) {
+			if (entity instanceof Monster || (UCars.config.getBoolean("general.cars.hitBy.enableAllMonsterDamage") && entity instanceof Damageable)) {
+				if(entity instanceof Villager && entity.getVehicle() != null && passenger instanceof Villager){
 					return;
 				}
-				uCarCrashEvent evt = new uCarCrashEvent(cart, ent, pDmg);
+				UCarCrashEvent evt = new UCarCrashEvent(cart, entity, passengerDamage);
 				if(evt.isCancelled()){
 					return;
 				}
-				pDmg = evt.getDamageToBeDoneToTheEntity();
+				passengerDamage = evt.getDamageToBeDoneToTheEntity();
 				
-				double mult = ucars.config
+				double multiplier = UCars.config
 						.getDouble("general.cars.hitBy.power") / 7;
-				ent.setVelocity(cart.getVelocity().clone().setY(0.5).multiply(mult));
+				entity.setVelocity(cart.getVelocity().clone().setY(0.5).multiply(multiplier));
 				
-				if(driver != null && driver.equals(ent)){
+				if(driver != null && driver.equals(entity)){
 					
 				}
 				else if(driver != null){
-					((Damageable) ent).damage(pDmg, driver);
+					((Damageable) entity).damage(passengerDamage, driver);
 				}
 				else {
-					((Damageable) ent).damage(pDmg);
+					((Damageable) entity).damage(passengerDamage);
 				}
 			}
 		}
 		
-		boolean player = ent instanceof Player;
-		Player p = null;
+		boolean player = entity instanceof Player;
+		Player player1 = null;
 		if(player){
-			p = (Player) ent;
+			player1 = (Player) entity;
 		}
 		if (!(player)) {
 			return;
 		}
-		if(p != null){
-			if (inACar(p)) {
+		if(player1 != null){
+			if (inACar(player1)) {
 				return;
 			}
 		}
 		
-		uCarCrashEvent evt = new uCarCrashEvent(cart, ent, pDmg);
+		UCarCrashEvent evt = new UCarCrashEvent(cart, entity, passengerDamage);
 		Bukkit.getPluginManager().callEvent(evt);
 		if(evt.isCancelled()){
 			return;
 		}
-		pDmg = evt.getDamageToBeDoneToTheEntity();
+		passengerDamage = evt.getDamageToBeDoneToTheEntity();
 		
-		double mult = ucars.config.getDouble("general.cars.hitBy.power") / 5;
-		ent.setVelocity(cart.getVelocity().clone().setY(0.5).multiply(mult));
-		if(p != null){
-			p.sendMessage(ucars.colors.getInfo()
+		double multiplier = UCars.config.getDouble("general.cars.hitBy.power") / 5;
+		entity.setVelocity(cart.getVelocity().clone().setY(0.5).multiply(multiplier));
+		if(player1 != null){
+			player1.sendMessage(UCars.colors.getInfo()
 				+ Lang.get("lang.messages.hitByCar"));
 		}
-		/*p.sendMessage("Speed: "+speed);
-		p.sendMessage("Crash dmg def: "+hitby_crash_damage);
-		p.sendMessage("Damage to do: "+pDmg);*/
-		if(ent instanceof LivingEntity){
-			((LivingEntity)ent).damage(pDmg, driver);
+		/*player1.sendMessage("Speed: "+speed);
+		player1.sendMessage("Crash dmg def: "+hitby_crash_damage);
+		player1.sendMessage("Damage to do: "+passengerDamage);*/
+		if(entity instanceof LivingEntity){
+			((LivingEntity)entity).damage(passengerDamage, driver);
 		}
 		return;
 	}
@@ -1537,43 +1537,43 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		if (uCarsAPI.getAPI().isuCarsHandlingPlacingCars() && (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART)) {
+		if (UCarsAPI.getAPI().isuCarsHandlingPlacingCars() && (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART)) {
 			// Its a minecart!
 			Material iar = block.getType();
-			if (ucars.ignoreRails && (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
+			if (UCars.ignoreRails && (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL
 					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL)) {
 				return;
 			}
 			if (!PlaceManager.placeableOn(iar.name().toUpperCase(), block.getData())) {
 				return;
 			}
-			if (!ucars.config.getBoolean("general.cars.enable")) {
+			if (!UCars.config.getBoolean("general.cars.enable")) {
 				return;
 			}
-			if (ucars.config.getBoolean("general.cars.placePerm.enable")) {
-				String perm = ucars.config
+			if (UCars.config.getBoolean("general.cars.placePerm.enable")) {
+				String permission = UCars.config
 						.getString("general.cars.placePerm.perm");
-				if (!event.getPlayer().hasPermission(perm)) {
-					String noPerm = Lang.get("lang.messages.noPlacePerm");
-					noPerm = noPerm.replaceAll("%perm%", perm);
+				if (!event.getPlayer().hasPermission(permission)) {
+					String noPermission = Lang.get("lang.messages.noPlacePerm");
+					noPermission = noPermission.replaceAll("%perm%", permission);
 					event.getPlayer().sendMessage(
-							ucars.colors.getError() + noPerm);
+							UCars.colors.getError() + noPermission);
 					return;
 				}
 			}
 			if (event.isCancelled()) {
 				event.getPlayer().sendMessage(
-						ucars.colors.getError()
+						UCars.colors.getError()
 								+ Lang.get("lang.messages.noPlaceHere"));
 				return;
 			}
 			if(!plugin.API.runCarChecks(event.getPlayer().getItemInHand())){
 				return;
 			}
-			Location loc = block.getLocation().add(0, 1.5, 0);
-			loc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
+			Location location = block.getLocation().add(0, 1.5, 0);
+			location.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 			final Minecart car = (Minecart) event.getPlayer().getWorld()
-					.spawnEntity(loc, EntityType.MINECART);
+					.spawnEntity(location, EntityType.MINECART);
 			float yaw = event.getPlayer().getLocation().getYaw()+90;
 			if(yaw < 0){
 				yaw = 360 + yaw;
@@ -1590,8 +1590,8 @@ public class uCarsListener implements Listener {
 			 * car.setVelocity(new Vector(0,0,0));
 			 */
 			event.getPlayer().sendMessage(
-					ucars.colors.getInfo() + Lang.get("lang.messages.place"));
-			event.getPlayer().sendMessage(ucars.colors.getInfo()+"You can also use 'jump' to change driving mode!");
+					UCars.colors.getInfo() + Lang.get("lang.messages.place"));
+			event.getPlayer().sendMessage(UCars.colors.getInfo()+"You can also use 'jump' to change driving mode!");
 			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 				ItemStack placed = event.getPlayer().getItemInHand();
 				placed.setAmount(placed.getAmount() - 1);
@@ -1599,31 +1599,31 @@ public class uCarsListener implements Listener {
 			}
 		}
 		if (inACar(event.getPlayer())) {
-			if (ucars.config.getBoolean("general.cars.fuel.enable")) {
-				if (plugin.isItemEqualToConfigIds(ucars.config.getStringList(
+			if (UCars.config.getBoolean("general.cars.fuel.enable")) {
+				if (plugin.isItemEqualToConfigIds(UCars.config.getStringList(
 						"general.cars.fuel.check"), event.getPlayer().getItemInHand())) {
 					event.getPlayer().performCommand("ufuel view");
 				}
 			}
 		}
-		if(ucars.config.getBoolean("general.cars.boostsEnable")){
+		if(UCars.config.getBoolean("general.cars.boostsEnable")){
 			return;
 		}
-		List<String> LowBoostRaw = ucars.config.getStringList("general.cars.lowBoost");
-		List<String> MedBoostRaw = ucars.config.getStringList("general.cars.medBoost");
-		List<String> HighBoostRaw = ucars.config.getStringList("general.cars.highBoost");
+		List<String> lowBoostRaw = UCars.config.getStringList("general.cars.lowBoost");
+		List<String> medBoostRaw = UCars.config.getStringList("general.cars.medBoost");
+		List<String> highBoostRaw = UCars.config.getStringList("general.cars.highBoost");
 		// int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
 		// int MedBoostId = ucars.config.getInt("general.cars.medBoost");
 		// int HighBoostId = ucars.config.getInt("general.cars.highBoost");
 		ItemStack inHand = event.getPlayer().getItemInHand();
-		String bid = inHand.getType().name().toUpperCase(); // booster material name
-		int bdata = inHand.getDurability();
+		String boosterMaterial = inHand.getType().name().toUpperCase(); // booster material name
+		int boosterData = inHand.getDurability();
 		ItemStack remove = inHand.clone();
 		remove.setAmount(1);
-		if (ItemStackFromId.equals(LowBoostRaw, bid, bdata)) {
+		if (ItemStackFromId.equals(lowBoostRaw, boosterMaterial, boosterData)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 10,
-						3000, ucars.config.getDouble("general.cars.defSpeed"));
+						3000, UCars.config.getDouble("general.cars.defSpeed"));
 				if (boosting) {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
@@ -1631,21 +1631,21 @@ public class uCarsListener implements Listener {
 								.removeItem(remove);
 					}
 					event.getPlayer().sendMessage(
-							ucars.colors.getSuccess()
+							UCars.colors.getSuccess()
 									+ Lang.get("lang.boosts.low"));
 					return;
 				} else {
 					event.getPlayer().sendMessage(
-							ucars.colors.getError()
+							UCars.colors.getError()
 									+ Lang.get("lang.boosts.already"));
 				}
 				return;
 			}
 		}
-		if (ItemStackFromId.equals(MedBoostRaw, bid, bdata)) {
+		if (ItemStackFromId.equals(medBoostRaw, boosterMaterial, boosterData)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 20,
-						6000, ucars.config.getDouble("general.cars.defSpeed"));
+						6000, UCars.config.getDouble("general.cars.defSpeed"));
 				if (boosting) {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
@@ -1653,21 +1653,21 @@ public class uCarsListener implements Listener {
 								.removeItem(remove);
 					}
 					event.getPlayer().sendMessage(
-							ucars.colors.getSuccess()
+							UCars.colors.getSuccess()
 									+ Lang.get("lang.boosts.med"));
 					return;
 				} else {
 					event.getPlayer().sendMessage(
-							ucars.colors.getError()
+							UCars.colors.getError()
 									+ Lang.get("lang.boosts.already"));
 				}
 				return;
 			}
 		}
-		if (ItemStackFromId.equals(HighBoostRaw, bid, bdata)) {
+		if (ItemStackFromId.equals(highBoostRaw, boosterMaterial, boosterData)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 50,
-						10000, ucars.config.getDouble("general.cars.defSpeed"));
+						10000, UCars.config.getDouble("general.cars.defSpeed"));
 				if (boosting) {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
@@ -1675,12 +1675,12 @@ public class uCarsListener implements Listener {
 								.removeItem(remove);
 					}
 					event.getPlayer().sendMessage(
-							ucars.colors.getSuccess()
+							UCars.colors.getSuccess()
 									+ Lang.get("lang.boosts.high"));
 					return;
 				} else {
 					event.getPlayer().sendMessage(
-							ucars.colors.getError()
+							UCars.colors.getError()
 									+ Lang.get("lang.boosts.already"));
 				}
 				return;
@@ -1744,14 +1744,14 @@ public class uCarsListener implements Listener {
 		if (!isACar(car)) {
 			return;
 		}
-		if (!ucars.config.getBoolean("general.cars.health.overrideDefault")) {
+		if (!UCars.config.getBoolean("general.cars.health.overrideDefault")) {
 			return;
 		}
 		CarHealthData health = getCarHealthHandler(car);
-		double damage = ucars.config
+		double damage = UCars.config
 				.getDouble("general.cars.health.punchDamage");
 		if (event.getDamage() > 0 && damage > 0) {
-			double max = ucars.config.getDouble("general.cars.health.default");
+			double max = UCars.config.getDouble("general.cars.health.default");
 			double left = health.getHealth() - damage;
 			ChatColor color = ChatColor.YELLOW;
 			if (left > (max * 0.66)) {
@@ -1776,7 +1776,7 @@ public class uCarsListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	void carDeath(ucarDeathEvent event) {
+	void carDeath(UCarDeathEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
@@ -1784,13 +1784,13 @@ public class uCarsListener implements Listener {
 		if(cart.hasMetadata("car.destroyed") || UEntityMeta.hasMetadata(cart, "car.destroyed")){
 			return;
 		}
-		UEntityMeta.setMetadata(cart, "car.destroyed", new StatValue(true, ucars.plugin));
-		cart.removeMetadata("car.vec", ucars.plugin);
+		UEntityMeta.setMetadata(cart, "car.destroyed", new StatValue(true, UCars.plugin));
+		cart.removeMetadata("car.vec", UCars.plugin);
 		UEntityMeta.removeMetadata(cart, "car.vec");
 		cart.eject();
-		Location loc = cart.getLocation();
+		Location location = cart.getLocation();
 		cart.remove();
-		loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+		location.getWorld().dropItemNaturally(location, new ItemStack(Material.MINECART));
 		return;
 	}
 	
@@ -1800,7 +1800,7 @@ public class uCarsListener implements Listener {
 		if(!block.getType().equals(Material.REDSTONE_LAMP_ON) && !block.getType().equals(Material.REDSTONE_LAMP_OFF)){
 			return;
 		}
-		boolean on = block.isBlockPowered();
+		boolean powered = block.isBlockPowered();
 		Sign sign = null;
 		for(BlockFace dir:BlockFace.values()){
 			Block bd = block.getRelative(dir);
@@ -1837,7 +1837,7 @@ public class uCarsListener implements Listener {
 			
 			Block otherBlock = block.getWorld().getBlockAt(x, y, z);
 			otherBlock.getLocation().getChunk(); //Make sure it's loaded
-			if(on){ //Set to redstone block
+			if(powered){ //Set to redstone block
 				otherBlock.setType(Material.REDSTONE_BLOCK);
 			}
 			else { //Set to glass
@@ -1849,18 +1849,18 @@ public class uCarsListener implements Listener {
 		}
 	}
 	
-	private int getCoord(String in, int current) throws Exception{
-		if(in.matches("-*\\d+")){
+	private int getCoordinate(String input, int current) throws Exception{
+		if(input.matches("-*\\d+")){
 			try {
-				return Integer.parseInt(in);
+				return Integer.parseInt(input);
 			} catch (Exception e) {
 				//Not an int
 				throw new Exception();
 			}
 		}
-		else if(in.matches("~-*\\d+") && in.length() > 1){
+		else if(input.matches("~-*\\d+") && input.length() > 1){
 			try {
-				return Integer.parseInt(in.substring(1))+current;
+				return Integer.parseInt(input.substring(1))+current;
 			} catch (Exception e) {
 				//Not an int
 				throw new Exception();
@@ -1874,13 +1874,13 @@ public class uCarsListener implements Listener {
 	
 	@EventHandler
 	void quit(PlayerQuitEvent event){
-		final Player pl = event.getPlayer();
-		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+		final Player player = event.getPlayer();
+		Bukkit.getScheduler().runTaskLaterAsynchronously(UCars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				if(!pl.isOnline()) {
-					UEntityMeta.removeAllMeta(pl);
+				if(!player.isOnline()) {
+					UEntityMeta.removeAllMeta(player);
 				}
 				return;
 			}}, 100l);
@@ -1888,12 +1888,12 @@ public class uCarsListener implements Listener {
 
 	@EventHandler
 	void quit(PlayerKickEvent event){
-		final Player pl = event.getPlayer();
-		Bukkit.getScheduler().runTaskLater(ucars.plugin, new Runnable(){
+		final Player player = event.getPlayer();
+		Bukkit.getScheduler().runTaskLater(UCars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				UEntityMeta.removeAllMeta(pl);
+				UEntityMeta.removeAllMeta(player);
 				return;
 			}}, 100l);
 	}
@@ -1904,9 +1904,9 @@ public class uCarsListener implements Listener {
 		if(!block.getType().equals(Material.REDSTONE_LAMP_ON) && !block.getType().equals(Material.REDSTONE_LAMP_OFF)){
 			return;
 		}
-		boolean on = block.isBlockPowered();
+		boolean powered = block.isBlockPowered();
 		Sign sign = null;
-		for(BlockFace dir:dirs()){
+		for(BlockFace dir: directions()){
 			Block bd = block.getRelative(dir);
 			if(bd.getState() instanceof Sign){
 				sign = (Sign) bd.getState();
@@ -1919,21 +1919,21 @@ public class uCarsListener implements Listener {
 		if(sign.getLine(1) == null || !sign.getLine(1).equalsIgnoreCase("[trafficlight]")){ //Not wireless redstone
 			return;
 		}
-		String otherLoc = sign.getLine(2);
-		if(otherLoc == null){ //Match positive and negative numbers
+		String otherLocation = sign.getLine(2);
+		if(otherLocation == null){ //Match positive and negative numbers
 			return; //Invalid sign
 		}
-		String[] parts = otherLoc.split(",");
+		String[] parts = otherLocation.split(",");
 		if(parts.length < 3){
 			return;
 		}
 		try {
 			int x,y,z;
-			if(otherLoc.matches(".+,.+,.+")){
+			if(otherLocation.matches(".+,.+,.+")){
 				try {
-					x = getCoord(parts[0], sign.getX());
-					y = getCoord(parts[1], sign.getY());
-					z = getCoord(parts[2], sign.getZ());
+					x = getCoordinate(parts[0], sign.getX());
+					y = getCoordinate(parts[1], sign.getY());
+					z = getCoordinate(parts[2], sign.getZ());
 				} catch (Exception e1) { //Badly formatted
 					return;
 				}
@@ -1947,12 +1947,12 @@ public class uCarsListener implements Listener {
 			for(Entity e:otherBlock.getLocation().getChunk().getEntities()){
 				if(e.getLocation().distanceSquared(otherBlock.getLocation()) < 4){ //Within 2 blocks of the loc given
 					if(e instanceof ItemFrame){
-						ItemFrame ifr = (ItemFrame) e;
-						if(on){
-							ifr.setItem(new ItemStack(Material.EMERALD_BLOCK));
+						ItemFrame itemFrame = (ItemFrame) e;
+						if(powered){
+							itemFrame.setItem(new ItemStack(Material.EMERALD_BLOCK));
 						}
 						else {
-							ifr.setItem(new ItemStack(Material.REDSTONE_BLOCK));
+							itemFrame.setItem(new ItemStack(Material.REDSTONE_BLOCK));
 						}
 					}
 				}
@@ -1963,43 +1963,43 @@ public class uCarsListener implements Listener {
 		}
 	}
 	
-	public Boolean atTrafficLight(Entity car, Block underblock, Block underunderblock, Location loc){
+	public Boolean atTrafficLight(Entity car, Block underBlock, Block underUnderBlock, Location location){
 		if (trafficLightsEnabled) {
 			if (plugin.isBlockEqualToConfigIds(
-					trafficLightRawIds, underblock)
+					trafficLightRawIds, underBlock)
 					|| plugin.isBlockEqualToConfigIds(
 							trafficLightRawIds,
-							underunderblock)
+							underUnderBlock)
 							|| plugin.isBlockEqualToConfigIds(
 									trafficLightRawIds,
-									underunderblock.getRelative(BlockFace.DOWN))
+									underUnderBlock.getRelative(BlockFace.DOWN))
 									|| plugin.isBlockEqualToConfigIds(
 											trafficLightRawIds,
-											underunderblock.getRelative(BlockFace.DOWN, 2))
+											underUnderBlock.getRelative(BlockFace.DOWN, 2))
 											) {
 				
 				Boolean found = false;
-				Boolean on = false;
+				Boolean powered = false;
 				int radius = 3;
 				int radiusSquared = radius * radius;
 				for (int x = -radius; x <= radius && !found; x++) {
 					for (int z = -radius; z <= radius && !found; z++) {
 						if ((x * x) + (z * z) <= radiusSquared) {
-							double locX = loc.getX() + x;
-							double locZ = loc.getZ() + z;
-							for (int y = (int) Math.round((loc.getY() - 4)); y < (loc
+							double locX = location.getX() + x;
+							double locZ = location.getZ() + z;
+							for (int y = (int) Math.round((location.getY() - 4)); y < (location
 									.getY() + 4) && !found; y++) {
 								Location light = new Location(
-										loc.getWorld(), locX, y, locZ);
+										location.getWorld(), locX, y, locZ);
 								if (light.getBlock().getType() == Material.REDSTONE_LAMP_OFF) {
-									if (trafficlightSignOn(light.getBlock())) {
+									if (trafficLightSignOn(light.getBlock())) {
 										found = true;
-										on = false;
+										powered = false;
 									}
 								} else if (light.getBlock().getType() == Material.REDSTONE_TORCH_ON) {
-									if (trafficlightSignOn(light.getBlock())) {
+									if (trafficLightSignOn(light.getBlock())) {
 										found = true;
-										on = true;
+										powered = true;
 									}
 								}
 							}
@@ -2007,7 +2007,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 				if (found) {
-					if (!on) {
+					if (!powered) {
 						return true;
 					}
 				}
@@ -2016,7 +2016,7 @@ public class uCarsListener implements Listener {
 		return false;
 	}
 	
-	private static BlockFace[] dirs(){
+	private static BlockFace[] directions(){
 		return new BlockFace[]{
 				BlockFace.NORTH,
 				BlockFace.EAST,
@@ -2031,21 +2031,21 @@ public class uCarsListener implements Listener {
 	
 	public void updateCarHealthHandler(Entity car, CarHealthData handler){
 		UEntityMeta.removeMetadata(car, "carhealth");
-		UEntityMeta.setMetadata(car, "carhealth", new StatValue(handler, ucars.plugin));
+		UEntityMeta.setMetadata(car, "carhealth", new StatValue(handler, UCars.plugin));
 	}
 	
 	public CarHealthData getCarHealthHandler(final Entity car){
 		CarHealthData health = null;
 		if (UEntityMeta.hasMetadata(car, "carhealth")) {
 			try {
-				List<MetadataValue> vals = UEntityMeta.getMetadata(car, "carhealth");
-				for (MetadataValue val : vals) {
-					if (val.value() != null && val.value() instanceof CarHealthData) {
-						health = (CarHealthData) val.value();
+				List<MetadataValue> values = UEntityMeta.getMetadata(car, "carhealth");
+				for (MetadataValue value : values) {
+					if (value.value() != null && value.value() instanceof CarHealthData) {
+						health = (CarHealthData) value.value();
 					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception exception) {
+				exception.printStackTrace();
 				UEntityMeta.removeMetadata(car, "carhealth");
 				health = null;
 			}

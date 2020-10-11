@@ -1,4 +1,4 @@
-package com.useful.uCarsAPI;
+package com.useful.ucars.api;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;

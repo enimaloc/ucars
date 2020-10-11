@@ -10,7 +10,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.entity.Player;
 
-import com.useful.ucars.ucars;
+import com.useful.ucars.UCars;
 
 public enum ControlScheme {	
 	MOUSE(0,
@@ -20,32 +20,32 @@ public enum ControlScheme {
 	
 	private static BaseComponent[] drivingInfoText(){
 		List<BaseComponent> infos = new ArrayList<BaseComponent>();
-		TextComponent line0 = new TextComponent(ucars.colors.getTitle()+"W = "+ucars.colors.getInfo()+"Forwards\n");
+		TextComponent line0 = new TextComponent(UCars.colors.getTitle()+"W = "+ UCars.colors.getInfo()+"Forwards\n");
 		infos.add(line0);
-		TextComponent line1 = new TextComponent(ucars.colors.getTitle()+"S = "+ucars.colors.getInfo()+"Backwards\n");
+		TextComponent line1 = new TextComponent(UCars.colors.getTitle()+"S = "+ UCars.colors.getInfo()+"Backwards\n");
 		infos.add(line1);
-		TextComponent line2 = new TextComponent(ucars.colors.getTitle()+"A = "+ucars.colors.getInfo()+"'Action'\n");
+		TextComponent line2 = new TextComponent(UCars.colors.getTitle()+"A = "+ UCars.colors.getInfo()+"'Action'\n");
 		infos.add(line2);
-		TextComponent line3 = new TextComponent(ucars.colors.getTitle()+"D = "+ucars.colors.getInfo()+"Brake (Hold to go slower)\n");
+		TextComponent line3 = new TextComponent(UCars.colors.getTitle()+"D = "+ UCars.colors.getInfo()+"Brake (Hold to go slower)\n");
 		infos.add(line3);
-		TextComponent line5 = new TextComponent(ucars.colors.getTitle()+"Mouse = "+ucars.colors.getInfo()+"Steering\n");
+		TextComponent line5 = new TextComponent(UCars.colors.getTitle()+"Mouse = "+ UCars.colors.getInfo()+"Steering\n");
 		infos.add(line5);
-		TextComponent line4 = new TextComponent(ucars.colors.getTitle()+"Jump = "+ucars.colors.getInfo()+"Switch controls");
+		TextComponent line4 = new TextComponent(UCars.colors.getTitle()+"Jump = "+ UCars.colors.getInfo()+"Switch controls");
 		infos.add(line4);
 		return infos.toArray(new BaseComponent[]{});
 	}
 	
 	private static BaseComponent[] keyboardInfoText(){
 		List<BaseComponent> infos = new ArrayList<BaseComponent>();
-		TextComponent line0 = new TextComponent(ucars.colors.getTitle()+"W = "+ucars.colors.getInfo()+"Forwards\n");
+		TextComponent line0 = new TextComponent(UCars.colors.getTitle()+"W = "+ UCars.colors.getInfo()+"Forwards\n");
 		infos.add(line0);
-		TextComponent line1 = new TextComponent(ucars.colors.getTitle()+"S = "+ucars.colors.getInfo()+"Backwards\n");
+		TextComponent line1 = new TextComponent(UCars.colors.getTitle()+"S = "+ UCars.colors.getInfo()+"Backwards\n");
 		infos.add(line1);
-		TextComponent line2 = new TextComponent(ucars.colors.getTitle()+"A = "+ucars.colors.getInfo()+"Turn Left\n");
+		TextComponent line2 = new TextComponent(UCars.colors.getTitle()+"A = "+ UCars.colors.getInfo()+"Turn Left\n");
 		infos.add(line2);
-		TextComponent line3 = new TextComponent(ucars.colors.getTitle()+"D = "+ucars.colors.getInfo()+"Turn Right\n");
+		TextComponent line3 = new TextComponent(UCars.colors.getTitle()+"D = "+ UCars.colors.getInfo()+"Turn Right\n");
 		infos.add(line3);
-		TextComponent line4 = new TextComponent(ucars.colors.getTitle()+"Jump = "+ucars.colors.getInfo()+"Switch controls");
+		TextComponent line4 = new TextComponent(UCars.colors.getTitle()+"Jump = "+ UCars.colors.getInfo()+"Switch controls");
 		infos.add(line4);
 		return infos.toArray(new BaseComponent[]{});
 	}
@@ -78,9 +78,9 @@ public enum ControlScheme {
 	}
 
 	private static ControlScheme get(int pos){
-		for(ControlScheme cs:values()){
-			if(cs.pos == pos){
-				return cs;
+		for(ControlScheme controlScheme : values()){
+			if(controlScheme.pos == pos){
+				return controlScheme;
 			}
 		}
 		return null;

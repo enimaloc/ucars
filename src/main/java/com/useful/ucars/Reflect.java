@@ -30,10 +30,10 @@ public class Reflect {
 	public static void sendPacket(Player p, Object packet) {
 			try {
 				Object nmsPlayer = getHandle(p);
-				Field con_field = nmsPlayer.getClass().getField("playerConnection");
-				Object con = con_field.get(nmsPlayer);
-				Method packet_method = getMethod(con.getClass(), "sendPacket");
-				packet_method.invoke(con, packet);
+				Field connectionField = nmsPlayer.getClass().getField("playerConnection");
+				Object connection = connectionField.get(nmsPlayer);
+				Method sendPacketMethod = getMethod(connection.getClass(), "sendPacket");
+				sendPacketMethod.invoke(connection, packet);
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
@@ -70,10 +70,10 @@ public class Reflect {
 	}
 
 	public static Object getHandle(World world) {
-		Object nms_entity = null;
-		Method entity_getHandle = getMethod(world.getClass(), "getHandle");
+		Object nmsEntity = null;
+		Method entityGetHandle = getMethod(world.getClass(), "getHandle");
 		try {
-			nms_entity = entity_getHandle.invoke(world);
+			nmsEntity = entityGetHandle.invoke(world);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -81,14 +81,14 @@ public class Reflect {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		return nms_entity;
+		return nmsEntity;
 	}
 
 	public static Object getHandle(Entity entity) {
-		Object nms_entity = null;
-		Method entity_getHandle = getMethod(entity.getClass(), "getHandle");
+		Object nmsEntity = null;
+		Method entityGetHandle = getMethod(entity.getClass(), "getHandle");
 		try {
-			nms_entity = entity_getHandle.invoke(entity);
+			nmsEntity = entityGetHandle.invoke(entity);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -96,7 +96,7 @@ public class Reflect {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		return nms_entity;
+		return nmsEntity;
 	}
 
 	public static Field getField(Class<?> cl, String field_name) {
@@ -111,34 +111,34 @@ public class Reflect {
 		return null;
 	}
 
-	public static Method getMethod(Class<?> cl, String method, Class<?>[] args) {
-		for (Method m : cl.getMethods()) {
-			if (m.getName().equals(method) && ClassListEqual(args, m.getParameterTypes())) {
-				return m;
+	public static Method getMethod(Class<?> clazz, String method, Class<?>[] args) {
+		for (Method clazzMethod : clazz.getMethods()) {
+			if (clazzMethod.getName().equals(method) && classListEqual(args, clazzMethod.getParameterTypes())) {
+				return clazzMethod;
 			}
 		}
 		return null;
 	}
 
-	public static Method getMethod(Class<?> cl, String method, Integer args) {
-		for (Method m : cl.getMethods()) {
-			if (m.getName().equals(method) && args.equals(new Integer(m.getParameterTypes().length))) {
-				return m;
+	public static Method getMethod(Class<?> clazz, String method, Integer args) {
+		for (Method clazzMethod : clazz.getMethods()) {
+			if (clazzMethod.getName().equals(method) && args.equals(new Integer(clazzMethod.getParameterTypes().length))) {
+				return clazzMethod;
 			}
 		}
 		return null;
 	}
 
-	public static Method getMethod(Class<?> cl, String method) {
-		for (Method m : cl.getMethods()) {
-			if (m.getName().equals(method)) {
-				return m;
+	public static Method getMethod(Class<?> clazz, String method) {
+		for (Method clazzMethod : clazz.getMethods()) {
+			if (clazzMethod.getName().equals(method)) {
+				return clazzMethod;
 			}
 		}
 		return null;
 	}
 
-	public static boolean ClassListEqual(Class<?>[] l1, Class<?>[] l2) {
+	public static boolean classListEqual(Class<?>[] l1, Class<?>[] l2) {
 		boolean equal = true;
 
 		if (l1.length != l2.length)

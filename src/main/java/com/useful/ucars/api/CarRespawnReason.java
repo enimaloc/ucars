@@ -1,4 +1,4 @@
-package com.useful.uCarsAPI;
+package com.useful.ucars.api;
 
 /**
  * The reasons why a car will respawn.

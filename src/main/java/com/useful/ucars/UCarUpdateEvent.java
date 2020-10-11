@@ -6,7 +6,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.util.Vector;
 
-public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
+public class UCarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
 	public Vector toTravel = new Vector();
 	public Boolean changePlayerYaw = false;
 	public float yaw = 90;
@@ -17,7 +17,7 @@ public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
 	private int readCount = 0;
 	private CarDirection dir;
 
-	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player, CarDirection dir) {
+	public UCarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player, CarDirection dir) {
 		super(vehicle);
 		this.toTravel = toTravel;
 		this.player = player;

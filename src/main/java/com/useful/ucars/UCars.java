@@ -34,16 +34,16 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.api.UCarsAPI;
 import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucars.util.UMeta;
 
-public class ucars extends JavaPlugin {
+public class UCars extends JavaPlugin {
 	// The main file
 	public static HashMap<String, Double> carBoosts = new HashMap<String, Double>();
 	public static HashMap<String, Double> fuel = new HashMap<String, Double>();
 	public static YamlConfiguration lang = new YamlConfiguration();
-	public static ucars plugin;
+	public static UCars plugin;
 	public static FileConfiguration config;
 	public static Boolean vault = false;
 	public static Economy economy = null;
@@ -51,13 +51,13 @@ public class ucars extends JavaPlugin {
 	public static boolean ignoreRails = true;
 	public Boolean protocolLib = false;
 	public Object protocolManager = null;
-	public ArrayList<ItemStack> ufuelitems = new ArrayList<ItemStack>();
+	public ArrayList<ItemStack> UFuelItems = new ArrayList<ItemStack>();
 	public ListStore licensedPlayers = null;
-	public uCarsCommandExecutor cmdExecutor = null;
+	public UCarsCommandExecutor cmdExecutor = null;
 	public ArrayList<Plugin> hookedPlugins = new ArrayList<Plugin>();
-	public Boolean ucarsTrade = false;
-	public static uCarsListener listener = null;
-	protected uCarsAPI API = null;
+	public Boolean UCarsTrade = false;
+	public static UCarsListener listener = null;
+	protected UCarsAPI API = null;
 	public static boolean forceRaceControls = false;
 	public static boolean smoothDrive = true;
 	public static boolean playersIgnoreTrafficLights = false;
@@ -150,7 +150,7 @@ public class ucars extends JavaPlugin {
 								final float sideways = packet.getFloat().read(0);
 								final float forwards = packet.getFloat().read(1);
 								final boolean jumping = packet.getBooleans().read(0);
-								Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
+								Bukkit.getScheduler().runTask(UCars.plugin, new Runnable(){
 
 									@Override
 									public void run() {
@@ -397,7 +397,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.ignoreVehiclesOnRails", true);
 			}
 			else {
-				ucars.ignoreRails = config.getBoolean("general.cars.ignoreVehiclesOnRails");
+				UCars.ignoreRails = config.getBoolean("general.cars.ignoreVehiclesOnRails");
 			}
 			if (!config.contains("general.cars.jumpBlock")) {
 				config.set("general.cars.jumpBlock", new String[]{"IRON_BLOCK"});
@@ -584,12 +584,12 @@ public class ucars extends JavaPlugin {
 		} catch (IOException e1) {
 			getLogger().info("Error parsing lang file!");
 		}
-		List<String> ids = ucars.config.getStringList("general.cars.fuel.items.ids");
-		ufuelitems = new ArrayList<ItemStack>();
+		List<String> ids = UCars.config.getStringList("general.cars.fuel.items.ids");
+		UFuelItems = new ArrayList<ItemStack>();
 		for (String raw : ids) {
 			ItemStack stack = ItemStackFromId.get(raw);
 			if (stack != null) {
-				ufuelitems.add(stack);
+				UFuelItems.add(stack);
 			}
 		}
 		colors = new Colors(config.getString("colorScheme.success"),
@@ -602,7 +602,7 @@ public class ucars extends JavaPlugin {
 		Set<String> keys = commands.keySet();
 		for (String k : keys) {
 			try {
-				cmdExecutor = new uCarsCommandExecutor(this);
+				cmdExecutor = new UCarsCommandExecutor(this);
 				getCommand(k).setExecutor(cmdExecutor);
 			} catch (Exception e) {
 				getLogger().log(Level.SEVERE,
@@ -627,9 +627,9 @@ public class ucars extends JavaPlugin {
 		this.licensedPlayers = new ListStore(new File(getDataFolder()
 				+ File.separator + "licenses.txt"));
 		this.licensedPlayers.load();
-		ucars.listener = new uCarsListener(this);
+		UCars.listener = new UCarsListener(this);
 		getServer().getPluginManager().registerEvents(listener, this);
-		this.API = new uCarsAPI();
+		this.API = new UCarsAPI();
 		smoothDrive = config.getBoolean("general.cars.smooth");
 		
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
@@ -690,8 +690,8 @@ public class ucars extends JavaPlugin {
 			} else {
 				final String mat = parts[0];
 				final int data = Integer.parseInt(parts[1]);
-				final int bdata = block.getData(); //TODO Alternative to .getData()
-				if (mat.equalsIgnoreCase(block.getType().name()) && bdata == data) {
+				final int bData = block.getData(); //TODO Alternative to .getData()
+				if (mat.equalsIgnoreCase(block.getType().name()) && bData == data) {
 					return true;
 				}
 			}
@@ -710,8 +710,8 @@ public class ucars extends JavaPlugin {
 			} else {
 				final String mat = parts[0];
 				final int data = Integer.parseInt(parts[1]);
-				final int bdata = item.getDurability();
-				if (mat.equalsIgnoreCase(item.getType().name()) && bdata == data) {
+				final int bData = item.getDurability();
+				if (mat.equalsIgnoreCase(item.getType().name()) && bData == data) {
 					return true;
 				}
 			}
@@ -723,15 +723,15 @@ public class ucars extends JavaPlugin {
 		for (ItemStack raw : items) {
 			final String mat = raw.getType().name().toUpperCase();
 			final int data = raw.getDurability();
-			final int bdata = item.getDurability();
-			if (mat.equalsIgnoreCase(item.getType().name()) && bdata == data) {
+			final int bData = item.getDurability();
+			if (mat.equalsIgnoreCase(item.getType().name()) && bData == data) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public uCarsAPI getAPI() {
+	public UCarsAPI getAPI() {
 		return API;
 	}
 
@@ -740,11 +740,11 @@ public class ucars extends JavaPlugin {
 	}
 
 	public void unHookPlugin(Plugin plugin) {
-		getAPI().unHookPlugin(plugin);
+		getAPI().unhookPlugin(plugin);
 	}
 
 	public void unHookPlugins() {
-		getAPI().unHookPlugins();
+		getAPI().unhookPlugins();
 	}
 
 	public Boolean isPluginHooked(Plugin plugin) {

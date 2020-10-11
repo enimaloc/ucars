@@ -1,7 +1,7 @@
-package com.useful.uCarsAPI;
+package com.useful.ucars.api;
 
-import com.useful.ucars.ucars;
-import com.useful.ucarsCommon.StatValue;
+import com.useful.ucars.UCars;
+import com.useful.ucars.common.StatValue;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -22,9 +22,9 @@ import java.util.UUID;
  * @author storm345
  * 
  */
-public class uCarsAPI {
+public class UCarsAPI {
 
-	private ucars plugin = null;
+	private UCars plugin = null;
 	private Map<Plugin, CarCheck> carChecks = new HashMap<Plugin, CarCheck>();
 	private Map<Plugin, ItemCarCheck> itemCarChecks = new HashMap<Plugin, ItemCarCheck>();
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
@@ -34,8 +34,8 @@ public class uCarsAPI {
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
 	private boolean uCarsHandlesPlacingCars = true;
 
-	public uCarsAPI() {
-		this.plugin = ucars.plugin;
+	public UCarsAPI() {
+		this.plugin = UCars.plugin;
 	}
 
 	public boolean hasItemCarCheckCriteria(){
@@ -47,8 +47,8 @@ public class uCarsAPI {
 	 * 
 	 * @return Returns the API
 	 */
-	public static uCarsAPI getAPI() {
-		return ucars.plugin.getAPI();
+	public static UCarsAPI getAPI() {
+		return UCars.plugin.getAPI();
 	}
 
 	/**
@@ -59,9 +59,9 @@ public class uCarsAPI {
 	 *            Your plugin
 	 */
 	public void hookPlugin(Plugin plugin) {
-		ucars.plugin.getLogger().info(
+		UCars.plugin.getLogger().info(
 				"Successfully hooked into by: " + plugin.getName());
-		ucars.plugin.hookedPlugins.add(plugin);
+		UCars.plugin.hookedPlugins.add(plugin);
 		return;
 	}
 
@@ -72,9 +72,9 @@ public class uCarsAPI {
 	 * @param plugin
 	 *            Your plugin
 	 */
-	public void unHookPlugin(Plugin plugin) {
-		ucars.plugin.getLogger().info("Successfully unhooked: " + plugin.getName());
-		ucars.plugin.hookedPlugins.remove(plugin);
+	public void unhookPlugin(Plugin plugin) {
+		UCars.plugin.getLogger().info("Successfully unhooked: " + plugin.getName());
+		UCars.plugin.hookedPlugins.remove(plugin);
 		return;
 	}
 
@@ -82,7 +82,7 @@ public class uCarsAPI {
 	 * Will reset all hooked plugins -Don't call unless absolutely needed
 	 * 
 	 */
-	public void unHookPlugins() {
+	public void unhookPlugins() {
 		plugin.hookedPlugins.removeAll(plugin.hookedPlugins); 
 		plugin.getLogger().info("Successfully unhooked all plugins!");
 		return;
@@ -97,10 +97,10 @@ public class uCarsAPI {
 	 * @return True if the plugin is hooked, False if not
 	 */
 	public Boolean isPluginHooked(Plugin plugin) {
-		if (plugin == ucars.plugin) {
+		if (plugin == UCars.plugin) {
 			return true;
 		}
-		return ucars.plugin.hookedPlugins.contains(plugin);
+		return UCars.plugin.hookedPlugins.contains(plugin);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 * @return True if unregistered, False if not because plugin isn't hooked
 	 */
-	public Boolean unRegisterCarCheck(Plugin plugin) {
+	public Boolean unregisterCarCheck(Plugin plugin) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -165,7 +165,7 @@ public class uCarsAPI {
 	 * @return True if unregistered, False if not because plugin isn't hooked
 	 * @since v17
 	 */
-	public Boolean unRegisterItemCarCheck(Plugin plugin) {
+	public Boolean unregisterItemCarCheck(Plugin plugin) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -234,7 +234,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 * @return True if unregistered, False if not because plugin isn't hooked
 	 */
-	public Boolean unRegisterTurningMod(Plugin plugin) {
+	public Boolean unregisterTurningMod(Plugin plugin) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -249,7 +249,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 * @return True if unregistered, False if not because plugin isn't hooked
 	 */
-	public Boolean unRegisterSpeedMod(Plugin plugin) {
+	public Boolean unregisterSpeedMod(Plugin plugin) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -264,15 +264,15 @@ public class uCarsAPI {
 	 * 
 	 * @param plugin
 	 *            Your plugin
-	 * @param decMod
+	 * @param accelerationModifier
 	 *            The Acceleration Mod to add
 	 * @return True if registered, False if not because plugin isn't hooked
 	 */
-	public Boolean registerDecelerationMod(Plugin plugin, CarDecelerationModifier accMod) {
+	public Boolean registerDecelerationMod(Plugin plugin, CarDecelerationModifier accelerationModifier) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
-		carDecelMods.put(plugin, accMod);
+		carDecelMods.put(plugin, accelerationModifier);
 		return true;
 	}
 
@@ -283,7 +283,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 * @return True if unregistered, False if not because plugin isn't hooked
 	 */
-	public Boolean unRegisterDecelerationMod(Plugin plugin) {
+	public Boolean unregisterDecelerationMod(Plugin plugin) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -291,14 +291,14 @@ public class uCarsAPI {
 		return true;
 	}
 	
-	public float getDeceleration(Player driver, float currentMult) {
+	public float getDeceleration(Player driver, float currentMultiplier) {
 		if(carDecelMods.size() < 1){
-			return currentMult;
+			return currentMultiplier;
 		}
 		for (CarDecelerationModifier m : new ArrayList<CarDecelerationModifier>(carDecelMods.values())) {
-			currentMult = m.getAccelerationDecimal(driver, currentMult);
+			currentMultiplier = m.getAccelerationDecimal(driver, currentMultiplier);
 		}
-		return currentMult;
+		return currentMultiplier;
 	}
 	
 	/**
@@ -308,15 +308,15 @@ public class uCarsAPI {
 	 * 
 	 * @param plugin
 	 *            Your plugin
-	 * @param accMod
+	 * @param accelerationModifier
 	 *            The Acceleration Mod to add
 	 * @return True if registered, False if not because plugin isn't hooked
 	 */
-	public Boolean registerAccelerationMod(Plugin plugin, CarAccelerationModifier accMod) {
+	public Boolean registerAccelerationMod(Plugin plugin, CarAccelerationModifier accelerationModifier) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
-		carAccelMods.put(plugin, accMod);
+		carAccelMods.put(plugin, accelerationModifier);
 		return true;
 	}
 
@@ -327,7 +327,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 * @return True if unregistered, False if not because plugin isn't hooked
 	 */
-	public Boolean unRegisterAccelerationMod(Plugin plugin) {
+	public Boolean unregisterAccelerationMod(Plugin plugin) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -335,14 +335,14 @@ public class uCarsAPI {
 		return true;
 	}
 	
-	public float getAcceleration(Player driver, float currentMult) {
+	public float getAcceleration(Player driver, float currentMultiplier) {
 		if(carAccelMods.size() < 1){
-			return currentMult;
+			return currentMultiplier;
 		}
 		for (CarAccelerationModifier m : new ArrayList<CarAccelerationModifier>(carAccelMods.values())) {
-			currentMult = m.getAccelerationDecimal(driver, currentMult);
+			currentMultiplier = m.getAccelerationDecimal(driver, currentMultiplier);
 		}
-		return currentMult;
+		return currentMultiplier;
 	}
 	
 	public synchronized double getMaxCarTurnAmountDegrees(Entity car, double normalAmount){
@@ -353,9 +353,9 @@ public class uCarsAPI {
 		return m;
 	}
 
-	public synchronized Vector getTravelVector(Entity car, Vector travelVector, double currentMult) {
+	public synchronized Vector getTravelVector(Entity car, Vector travelVector, double currentMultiplier) {
 		for (CarSpeedModifier m : carSpeedMods.values()) {
-			travelVector = m.getModifiedSpeed(car, travelVector, currentMult);
+			travelVector = m.getModifiedSpeed(car, travelVector, currentMultiplier);
 		}
 		return travelVector;
 	}
@@ -371,7 +371,7 @@ public class uCarsAPI {
 	 *            So don't use this for tracking cars)
 	 * @return All the meta set for that car
 	 */
-	public Map<String, StatValue> getuCarMeta(UUID entityId) {
+	public Map<String, StatValue> getUCarMeta(UUID entityId) {
 		if (!ucarsMeta.containsKey(entityId)) {
 			return new HashMap<String, StatValue>();
 		}
@@ -396,7 +396,7 @@ public class uCarsAPI {
 	 * @since v17
 	 */
 	public boolean setUseRaceControls(UUID id, Plugin plugin){
-		return adduCarsMeta(plugin, id, "car.controls", new StatValue("race", ucars.plugin));
+		return addUCarsMeta(plugin, id, "car.controls", new StatValue("race", UCars.plugin));
 	}
 
 	/**
@@ -417,8 +417,7 @@ public class uCarsAPI {
 	 * @return True is successful and False if plugin is not hooked or
 	 *         unsuccessful
 	 */
-	public Boolean adduCarsMeta(Plugin plugin, UUID entityId, String statName,
-			StatValue toAdd) {
+	public Boolean addUCarsMeta(Plugin plugin, UUID entityId, String statName, StatValue toAdd) {
 		if (!isPluginHooked(plugin)) {
 			return false;
 		}
@@ -447,7 +446,7 @@ public class uCarsAPI {
 	 * @return ucarMeta is successful and null if not existing on car or plugin
 	 *         is not hooked or unsuccessful
 	 */
-	public StatValue getUcarMeta(Plugin plugin, String statName, UUID entityId) {
+	public StatValue getUCarMeta(Plugin plugin, String statName, UUID entityId) {
 		if (!isPluginHooked(plugin) || !ucarsMeta.containsKey(entityId)) {
 			return null;
 		}
@@ -473,7 +472,7 @@ public class uCarsAPI {
 	 * @return True if removed, False if plugin not hooked or removal
 	 *         unsuccessful (Not set)
 	 */
-	public Boolean removeUcarMeta(Plugin plugin, String statName, UUID entityId) {
+	public Boolean removeUCarMeta(Plugin plugin, String statName, UUID entityId) {
 		if (!isPluginHooked(plugin) || !ucarsMeta.containsKey(entityId)) {
 			return false;
 		}
@@ -516,7 +515,7 @@ public class uCarsAPI {
 	 * @param newId
 	 *            The new ID of the entity
 	 */
-	public void updateUcarMeta(UUID previousId, UUID newId) {
+	public void updateUCarMeta(UUID previousId, UUID newId) {
 		if (!ucarsMeta.containsKey(previousId)) {
 			return;
 		}
@@ -534,7 +533,7 @@ public class uCarsAPI {
 	 * @return True if it's a car
 	 */
 	public Boolean checkIfCar(Entity car) {
-		return ucars.listener.isACar(car);
+		return UCars.listener.isACar(car);
 	}
 
 	/**
@@ -545,7 +544,7 @@ public class uCarsAPI {
 	 * @return True if they're in a car
 	 */
 	public Boolean checkInCar(Player player) {
-		return ucars.listener.inACar(player);
+		return UCars.listener.inACar(player);
 	}
 
 	/**
@@ -556,7 +555,7 @@ public class uCarsAPI {
 	 * @return True if they're in a car
 	 */
 	public Boolean checkInCar(String player) {
-		return ucars.listener.inACar(player);
+		return UCars.listener.inACar(player);
 	}
 	
     /**
@@ -579,15 +578,15 @@ public class uCarsAPI {
 	public Boolean atTrafficLight(Entity car){
 		Location loc = car.getLocation();
 		Block under = loc.getBlock().getRelative(BlockFace.DOWN);
-		Block underunder = under.getRelative(BlockFace.DOWN);
-		return ucars.listener.atTrafficLight(car, under, underunder, loc);
+		Block underUnder = under.getRelative(BlockFace.DOWN);
+		return UCars.listener.atTrafficLight(car, under, underUnder, loc);
 	}
 
 	public boolean isuCarsHandlingPlacingCars() {
 		return uCarsHandlesPlacingCars;
 	}
 
-	public void setuCarsHandlesPlacingCars(boolean uCarsHandlesPlacingCars) {
+	public void setUCarsHandlesPlacingCars(boolean uCarsHandlesPlacingCars) {
 		this.uCarsHandlesPlacingCars = uCarsHandlesPlacingCars;
 	}
 }

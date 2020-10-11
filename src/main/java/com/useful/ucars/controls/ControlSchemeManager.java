@@ -2,9 +2,9 @@ package com.useful.ucars.controls;
 
 import org.bukkit.entity.Player;
 
-import com.useful.ucars.ucars;
+import com.useful.ucars.UCars;
 import com.useful.ucars.util.UEntityMeta;
-import com.useful.ucarsCommon.StatValue;
+import com.useful.ucars.common.StatValue;
 
 public class ControlSchemeManager {
 	public static final String CONTROL_TYPE_META = "ucarsControlScheme";
@@ -16,7 +16,7 @@ public class ControlSchemeManager {
 		}
 		try {
 			return (ControlScheme) UEntityMeta.getMetadata(player, CONTROL_TYPE_META).get(0).value();
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			UEntityMeta.removeMetadata(player, CONTROL_TYPE_META);
 			return ControlScheme.getDefault();
 		}
@@ -24,7 +24,7 @@ public class ControlSchemeManager {
 	
 	public static void setControlScheme(Player player, ControlScheme scheme){
 		UEntityMeta.removeMetadata(player, CONTROL_TYPE_META);
-		UEntityMeta.setMetadata(player, CONTROL_TYPE_META, new StatValue(scheme, ucars.plugin));
+		UEntityMeta.setMetadata(player, CONTROL_TYPE_META, new StatValue(scheme, UCars.plugin));
 	}
 	
 	public static ControlScheme toggleControlScheme(Player player){
@@ -41,7 +41,7 @@ public class ControlSchemeManager {
 	public static void setControlsLocked(Player player, boolean locked){
 		UEntityMeta.removeMetadata(player, CONTROL_LOCK_META);
 		if(locked){
-			UEntityMeta.setMetadata(player, CONTROL_LOCK_META, new StatValue(null, ucars.plugin));
+			UEntityMeta.setMetadata(player, CONTROL_LOCK_META, new StatValue(null, UCars.plugin));
 		}
 	}
 }

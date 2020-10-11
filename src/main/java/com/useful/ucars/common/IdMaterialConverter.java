@@ -1,4 +1,4 @@
-package com.useful.ucarsCommon;
+package com.useful.ucars.common;
  
 import org.bukkit.Material;
 

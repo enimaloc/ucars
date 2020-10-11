@@ -9,11 +9,11 @@ public class Colors {
 
 	public Colors(String success, String error, String info, String title,
 			String tp) {
-		this.success = ucars.colorise(success);
-		this.error = ucars.colorise(error);
-		this.info = ucars.colorise(info);
-		this.title = ucars.colorise(title);
-		this.tp = ucars.colorise(tp);
+		this.success = UCars.colorise(success);
+		this.error = UCars.colorise(error);
+		this.info = UCars.colorise(info);
+		this.title = UCars.colorise(title);
+		this.tp = UCars.colorise(tp);
 	}
 
 	public String getSuccess() {

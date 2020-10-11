@@ -1,4 +1,4 @@
-package com.useful.uCarsAPI;
+package com.useful.ucars.api;
 
 import org.bukkit.entity.Player;
 
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
  * @author storm345
  * 
  */
-public interface CarAccelerationModifier {
+public interface CarDecelerationModifier {
 	/**
 	 * Return the car's acceleration as a decimal, eg. 0.5 for half normal acceleration or 2.0 for 2.0x normal acceleration
 	 * 

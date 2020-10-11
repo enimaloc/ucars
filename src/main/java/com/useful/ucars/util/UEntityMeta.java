@@ -13,24 +13,24 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
-import com.useful.ucars.ucars;
+import com.useful.ucars.UCars;
 
 public class UEntityMeta {
 	
-	private static volatile Map<UUID, Object> entityMetaObjs = new ConcurrentHashMap<UUID, Object>(100, 0.75f, 2);
-	private static volatile Map<UUID, WeakReference<Entity>> entityObjs = new ConcurrentHashMap<UUID, WeakReference<Entity>>(100, 0.75f, 2);
+	private static volatile Map<UUID, Object> entityMetaObjects = new ConcurrentHashMap<UUID, Object>(100, 0.75f, 2);
+	private static volatile Map<UUID, WeakReference<Entity>> entityObjects = new ConcurrentHashMap<UUID, WeakReference<Entity>>(100, 0.75f, 2);
 	
 	public static void cleanEntityObjs(){
-		Bukkit.getScheduler().runTaskTimerAsynchronously(ucars.plugin, new Runnable(){
+		Bukkit.getScheduler().runTaskTimerAsynchronously(UCars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				for(Entry<UUID, WeakReference<Entity>> entry:entityObjs.entrySet()){
+				for(Entry<UUID, WeakReference<Entity>> entry: entityObjects.entrySet()){
 					UUID entID = entry.getKey();
 					WeakReference<Entity> val = entry.getValue();
 					if(val == null || val.get() == null){
-						entityObjs.remove(entID);
-						Object metaObj = entityMetaObjs.remove(entID); //Entity no longer exists
+						entityObjects.remove(entID);
+						Object metaObj = entityMetaObjects.remove(entID); //Entity no longer exists
 						if(metaObj != null){
 							UMeta.removeAllMeta(metaObj);
 						}
@@ -90,55 +90,55 @@ public class UEntityMeta {
 			}});*/
 	}
 	
-	private static void setEntityObj(Entity e){
-		if(e instanceof Player){
+	private static void setEntityObj(Entity entity){
+		if(entity instanceof Player){
 			return;
 		}
-		entityObjs.put(e.getUniqueId(), new WeakReference<Entity>(e));
+		entityObjects.put(entity.getUniqueId(), new WeakReference<Entity>(entity));
 	}
 	
-	private static void delEntityObj(Entity e){
-		if(e instanceof Player){
+	private static void delEntityObj(Entity entity){
+		if(entity instanceof Player){
 			return;
 		}
-		entityObjs.remove(e.getUniqueId());
+		entityObjects.remove(entity.getUniqueId());
 	}
 	
-	public static void printOutMeta(Entity e){
+	public static void printOutMeta(Entity entity){
 		StringBuilder sb = new StringBuilder();
-		Map<String, List<MetadataValue>> metas = UMeta.getAllMeta(getMetaObj(e));
+		Map<String, List<MetadataValue>> metas = UMeta.getAllMeta(getMetaObj(entity));
 		for(String key:new ArrayList<String>(metas.keySet())){
 			if(sb.length() > 0){
 				sb.append(", ");
 			}
 			sb.append(key);
 		}
-		Bukkit.broadcastMessage(e.getUniqueId()+": "+sb.toString());
+		Bukkit.broadcastMessage(entity.getUniqueId()+": "+sb.toString());
 	}
 	
-	public static void removeAllMeta(Entity e){
-		Object o = entityMetaObjs.get(e.getUniqueId());
-		entityMetaObjs.remove(e.getUniqueId());
-		delEntityObj(e);
-		/*entityObjs.put(e.getUniqueId(), e);*/
+	public static void removeAllMeta(Entity entity){
+		Object o = entityMetaObjects.get(entity.getUniqueId());
+		entityMetaObjects.remove(entity.getUniqueId());
+		delEntityObj(entity);
+		/*entityObjs.put(entity.getUniqueId(), entity);*/
 		if(o != null){
 			UMeta.removeAllMeta(o);
 		}
 	}
 
-	private static Object getMetaObj(Entity e){
-		if(e == null){
+	private static Object getMetaObj(Entity entity){
+		if(entity == null){
 			return null;
 		}
-		/*entityObjs.put(e.getUniqueId(), e);*/
-		Object obj = entityMetaObjs.get(e.getUniqueId());
+		/*entityObjs.put(entity.getUniqueId(), entity);*/
+		Object obj = entityMetaObjects.get(entity.getUniqueId());
 		if(obj == null){
-			synchronized (USchLocks.getMonitor("newMetaObjMonitor"+e.getUniqueId())) {
-				obj = entityMetaObjs.get(e.getUniqueId());
+			synchronized (USchLocks.getMonitor("newMetaObjMonitor"+entity.getUniqueId())) {
+				obj = entityMetaObjects.get(entity.getUniqueId());
 				if(obj == null) {
 					obj = new Object();
-					entityMetaObjs.put(e.getUniqueId(), obj);
-					setEntityObj(e);
+					entityMetaObjects.put(entity.getUniqueId(), obj);
+					setEntityObj(entity);
 				}
 			}
 		}

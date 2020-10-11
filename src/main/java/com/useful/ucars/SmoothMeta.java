@@ -4,29 +4,29 @@ package com.useful.ucars;
 public class SmoothMeta { //Performs all the calculations for actually making cars accelerate smoothly	
 	private volatile long lastTime;
 	private volatile float speedFactor = 0;
-	private volatile float accFac = 1;
-	private volatile float decFac = 1;
+	private volatile float accelerationFactor = 1;
+	private volatile float decelerationFactor = 1;
 	private volatile CarDirection dir = CarDirection.FORWARDS;
 	private volatile long firstAirTime = System.currentTimeMillis();
 	
-	public SmoothMeta(float accFac, float decFac){
+	public SmoothMeta(float accelerationFactor, float decelerationFactor){
 		this.lastTime = System.currentTimeMillis();
 		this.speedFactor = 0;
-		this.accFac = accFac;
-		this.decFac = decFac;
+		this.accelerationFactor = accelerationFactor;
+		this.decelerationFactor = decelerationFactor;
 		firstAirTime = System.currentTimeMillis();
 	}
 	
-	public void setFirstAirTime(long sf){
-		this.firstAirTime = sf;
+	public void setFirstAirTime(long firstAirTime){
+		this.firstAirTime = firstAirTime;
 	}
 	
 	public long getFirstAirTime(){
 		return this.firstAirTime;
 	}
 	
-	public void setCurrentSpeedFactor(float sf){
-		this.speedFactor = sf;
+	public void setCurrentSpeedFactor(float currentSpeedFactor){
+		this.speedFactor = currentSpeedFactor;
 	}
 	
 	public float getCurrentSpeedFactor(){
@@ -42,59 +42,59 @@ public class SmoothMeta { //Performs all the calculations for actually making ca
 		return incrementAndGetFactor(dir); //Increase our multiplier so the car gets faster
 	}
 	
-	public void updateAccelerationFactor(float accFac){ //Update the new 'acceleration modifier' from the API so the API has more control over acceleration
-		this.accFac = accFac;
+	public void updateAccelerationFactor(float accelerationFactor){ //Update the new 'acceleration modifier' from the API so the API has more control over acceleration
+		this.accelerationFactor = accelerationFactor;
 	}
 	
-	public void updateDecelerationFactor(float decFac){ //Update the new 'acceleration modifier' from the API so the API has more control over acceleration
-		this.decFac = decFac;
+	public void updateDecelerationFactor(float decelerationFactor){ //Update the new 'acceleration modifier' from the API so the API has more control over acceleration
+		this.decelerationFactor = decelerationFactor;
 	}
 	
-	private float getA(){ //Get the multiplier for accelerating
-		return (float) (0.025*accFac); //Our constant of 0.025 multiplied by whatever the API is asking for as a modification to the rate of acceleration
+	private float getAccelerating(){ //Get the multiplier for accelerating
+		return (float) (0.025* accelerationFactor); //Our constant of 0.025 multiplied by whatever the API is asking for as a modification to the rate of acceleration
 	}
 	
-	private float getDA(boolean reversing){ //Get the multiplier for deceleration (reversing = going in opposite dir to accel/decel)
+	private float getDeceleration(boolean reversing){ //Get the multiplier for deceleration (reversing = going in opposite dir to accel/decel)
 		if(!reversing){
-			return (float) (0.025*decFac); //Our constant of 0.045 multiplied by whatever the API is asking for as a modification to the rate of acceleration
+			return (float) (0.025* decelerationFactor); //Our constant of 0.045 multiplied by whatever the API is asking for as a modification to the rate of acceleration
 		}
 		else {
-			return (float) (0.035*decFac); //Our constant of 0.045 multiplied by whatever the API is asking for as a modification to the rate of acceleration
+			return (float) (0.035* decelerationFactor); //Our constant of 0.045 multiplied by whatever the API is asking for as a modification to the rate of acceleration
 		}
 	}
 	
-	private float incrementAndGetFactor(CarDirection dir){
-		if(dir.equals(CarDirection.NONE)){
+	private float incrementAndGetFactor(CarDirection direction){
+		if(direction.equals(CarDirection.NONE)){
 			decrementFactor(false);
 			if(this.dir.equals(CarDirection.BACKWARDS)){ //Normal Plugin is trying to move forwards still; so simply return - if it should be reversing
 				return -speedFactor;
 			}
 			return speedFactor;
 		}
-		if(!this.dir.equals(dir) && speedFactor > 0){
+		if(!this.dir.equals(direction) && speedFactor > 0){
 			decrementFactor(true);
 			return -speedFactor;
 		}
-		this.dir = dir;
+		this.dir = direction;
 		incrementFactor();
 		return speedFactor;
 	}
 	
-	private void incrementFactor(CarDirection dir){
-		if(dir.equals(CarDirection.NONE)){
+	private void incrementFactor(CarDirection direction){
+		if(direction.equals(CarDirection.NONE)){
 			decrementFactor(false);
 			return;
 		}
-		if(!this.dir.equals(dir) && speedFactor > 0){
+		if(!this.dir.equals(direction) && speedFactor > 0){
 			decrementFactor(true);
 		}
-		this.dir = dir;
+		this.dir = direction;
 		incrementFactor();
 	}
 	
 	private void decrementFactor(boolean reversing){
 		float diff = speedFactor; //The difference between 1 (full speed) and the rate we want to accelerate by
-		speedFactor -= (getDA(reversing)*diff); //Increase the speed by 'a' multiplied by the difference; eg. accelerates faster the slower the vehicle moves (Looks quite realistic)
+		speedFactor -= (getDeceleration(reversing)*diff); //Increase the speed by 'a' multiplied by the difference; eg. accelerates faster the slower the vehicle moves (Looks quite realistic)
 		if(speedFactor <= 0.05){ //Close enough to 1; so just be 1 or else you get infinitely close to 1 without getting to it (Wasting time calculating for no visible reason)
 			speedFactor = 0;
 			return;
@@ -107,10 +107,10 @@ public class SmoothMeta { //Performs all the calculations for actually making ca
 			return;
 		}
 		float diff = 1-speedFactor; //The difference between 1 (full speed) and the rate we want to accelerate by
-		speedFactor += (getA()*diff); //Increase the speed by 'a' multiplied by the difference; eg. accelerates faster the slower the vehicle moves (Looks quite realistic)
+		speedFactor += (getAccelerating()*diff); //Increase the speed by 'a' multiplied by the difference; eg. accelerates faster the slower the vehicle moves (Looks quite realistic)
 	}
 	
-	public void resetAcel(){ //Simulate the car being stationary again
+	public void resetSpeedFactor(){ //Simulate the car being stationary again
 		speedFactor = 0;
 	}
 	

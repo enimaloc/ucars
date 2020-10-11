@@ -1,10 +1,10 @@
 package com.useful.ucars;
 
-import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.api.UCarsAPI;
 import com.useful.ucars.controls.ControlScheme;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucars.util.UEntityMeta;
-import com.useful.ucarsCommon.StatValue;
+import com.useful.ucars.common.StatValue;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -40,9 +40,9 @@ public class MotionManager {
 		while (!(ent instanceof Vehicle) && ent.getVehicle() != null) {
 			ent = ent.getVehicle();
 		}
-		if(!ucars.listener.inACar(player)){
+		if(!UCars.listener.inACar(player)){
 		}
-		if (!ucars.listener.inACar(player) || !(ent instanceof Vehicle)) {
+		if (!UCars.listener.inACar(player) || !(ent instanceof Vehicle)) {
 			return;
 		}
 		final Vehicle car = (Vehicle) ent;
@@ -56,15 +56,15 @@ public class MotionManager {
 		if(jumping){
 			if(!UEntityMeta.hasMetadata(player, "ucarsToggleControls")){
 				/*player.setMetadata("ucarsToggleControls", new StatValue(true, ucars.plugin));*/
-				UEntityMeta.setMetadata(player, "ucarsToggleControls", new StatValue(true, ucars.plugin));
+				UEntityMeta.setMetadata(player, "ucarsToggleControls", new StatValue(true, UCars.plugin));
 				if(ControlSchemeManager.isControlsLocked(player)){
-					player.sendMessage(ucars.colors.getError()+"Cannot toggle control scheme right now! (It's been locked by another plugin)");
+					player.sendMessage(UCars.colors.getError()+"Cannot toggle control scheme right now! (It's been locked by another plugin)");
 				}
 				else {
 					ControlSchemeManager.toggleControlScheme(player);
-					if(!ucars.turningCircles && ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
+					if(!UCars.turningCircles && ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
 						UEntityMeta.removeMetadata(car, "ucarsSteeringDir");
-						UEntityMeta.setMetadata(car, "ucarsSteeringDir", new StatValue(plaD.clone().setY(0).normalize(), ucars.plugin));
+						UEntityMeta.setMetadata(car, "ucarsSteeringDir", new StatValue(plaD.clone().setY(0).normalize(), UCars.plugin));
 					}
 				}
 			}
@@ -90,7 +90,7 @@ public class MotionManager {
 			carDirection = car.getLocation().getDirection();
 			//carDirection = plaD.clone().setY(0).normalize();
 		}
-		if(keyboardSteering || ucars.turningCircles){
+		if(keyboardSteering || UCars.turningCircles){
 			try {
 				if(UEntityMeta.hasMetadata(car, "ucarsSteeringDir")){
 					carDirection = (Vector) UEntityMeta.getMetadata(car, "ucarsSteeringDir").get(0).value();
@@ -106,16 +106,16 @@ public class MotionManager {
 		
 		CarDirection dir = CarDirection.NONE;
 		
-		if(f == 0 && !ucars.smoothDrive){
+		if(f == 0 && !UCars.smoothDrive){
 			return;
 		}
 		
 		boolean inAir = car.getLocation().clone().add(0, -1, 0).getBlock().isEmpty();
-		if(ucars.smoothDrive && inAir){
+		if(UCars.smoothDrive && inAir){
 			f = 0;
 			s = 0;
 		}
-		else if(ucars.smoothDrive) {
+		else if(UCars.smoothDrive) {
 			//Not in air
 			ControlInput.setFirstAirTime(player, System.currentTimeMillis());
 		}
@@ -151,12 +151,12 @@ public class MotionManager {
 		Boolean doDivider = false;
 		Boolean doAction = false;
 		double divider = 0.5; // x of the (1) speed
-		double rotMod = uCarsAPI.getAPI().getMaxCarTurnAmountDegrees(car, 5);
+		double rotMod = UCarsAPI.getAPI().getMaxCarTurnAmountDegrees(car, 5);
 		if (turning) {
 			if (side < 0) {// do left action
 				if(!keyboardSteering){
 					doAction = true;
-					UEntityMeta.setMetadata(car, "car.action", new StatValue(true, ucars.plugin));
+					UEntityMeta.setMetadata(car, "car.action", new StatValue(true, UCars.plugin));
 				}
 				else {
 					carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? rotMod : -rotMod);
@@ -164,14 +164,14 @@ public class MotionManager {
 			} else if (side > 0) {// do right action
 				if(!keyboardSteering){
 					doDivider = true;
-					UEntityMeta.setMetadata(car, "car.action", new StatValue(true, ucars.plugin));
+					UEntityMeta.setMetadata(car, "car.action", new StatValue(true, UCars.plugin));
 				}
 				else {
 					carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -rotMod : rotMod);
 				}
 			}
 		}
-		if(!keyboardSteering && ucars.turningCircles && (!ucars.smoothDrive || !inAir)){
+		if(!keyboardSteering && UCars.turningCircles && (!UCars.smoothDrive || !inAir)){
 			//Rotate 'carDirection' vector according to where they're looking; max of rotMod degrees
 			float pYaw = (float) Math.toDegrees(Math.atan2(plaD.getX() , -plaD.getZ())); //Calculate yaw from 'player direction' vector
 			float cYaw = (float) Math.toDegrees(Math.atan2(carDirection.getX() , -carDirection.getZ())); //Calculate yaw from 'carDirection' vector
@@ -194,9 +194,9 @@ public class MotionManager {
 			}
 			carDirection = rotateXZVector3dDegrees(carDirection, yawDiff/*ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -yawDiff : yawDiff*/);
 		}
-		if(keyboardSteering || ucars.turningCircles){
+		if(keyboardSteering || UCars.turningCircles){
 			UEntityMeta.removeMetadata(car, "ucarsSteeringDir");
-			UEntityMeta.setMetadata(car, "ucarsSteeringDir", new StatValue(carDirection.normalize(), ucars.plugin));
+			UEntityMeta.setMetadata(car, "ucarsSteeringDir", new StatValue(carDirection.normalize(), UCars.plugin));
 			plaD = carDirection.clone();
 		}
 		if (forwards) {
@@ -213,12 +213,12 @@ public class MotionManager {
 				}
 			}
 			vec = new Vector(x, y, z);
-			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player, dir);
+			final UCarUpdateEvent event = new UCarUpdateEvent(car, vec, player, dir);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
 			final Vector v = vec;
-			ucars.plugin.getServer().getScheduler()
-					.runTask(ucars.plugin, new Runnable() {
+			UCars.plugin.getServer().getScheduler()
+					.runTask(UCars.plugin, new Runnable() {
 
 						public void run() {
 							ControlInput.input(car, v, event);
@@ -238,10 +238,10 @@ public class MotionManager {
 			z = 0 - z;
 			vec = new Vector(x, y, z);
 			final Vector v = vec;
-			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player, dir);
+			final UCarUpdateEvent event = new UCarUpdateEvent(car, vec, player, dir);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
-			Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
+			Bukkit.getScheduler().runTask(UCars.plugin, new Runnable(){
 
 				@Override
 				public void run() {

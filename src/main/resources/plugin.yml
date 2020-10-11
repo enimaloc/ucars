@@ -1,5 +1,5 @@
 name: uCars
-main: com.useful.ucars.ucars
+main: com.useful.ucars.UCars
 version: 20
 softdepend: [Vault]
 depend: [ProtocolLib]

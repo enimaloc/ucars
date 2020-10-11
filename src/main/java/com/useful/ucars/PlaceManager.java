@@ -2,7 +2,7 @@ package com.useful.ucars;
 
 import java.util.List;
 
-import com.useful.ucarsCommon.IdMaterialConverter;
+import com.useful.ucars.common.IdMaterialConverter;
 
 public class PlaceManager {
 	/**
@@ -16,10 +16,10 @@ public class PlaceManager {
 	}
 	public static Boolean placeableOn(String materialName, byte data) {
 		Boolean placeable = false;
-		if (!ucars.config.getBoolean("general.cars.roadBlocks.enable")) {
+		if (!UCars.config.getBoolean("general.cars.roadBlocks.enable")) {
 			return true;
 		}
-		List<String> rBlocks = ucars.config
+		List<String> rBlocks = UCars.config
 				.getStringList("general.cars.roadBlocks.ids");
 		for (String raw : rBlocks) {
 			if (ItemStackFromId.equals(raw, materialName, data)) {

@@ -1,33 +1,21 @@
-package com.useful.ucars;
+package com.useful.ucars.api;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class ucarDeathEvent extends Event implements Cancellable {
-	public Boolean cancelled = false;
+public class UCarCrashEvent extends Event implements Cancellable {
+	private boolean cancelled = false;
 	private static final HandlerList handlers = new HandlerList();
 	private Entity car = null;
-	private Player player = null;
-	
-	public ucarDeathEvent(Entity vehicle) {
+	private Entity hit;
+	private double damageToEntity = 0;
+
+	public UCarCrashEvent(Entity vehicle, Entity hit, double damageToEntity) {
 		this.car = vehicle;
-	}
-	
-	public ucarDeathEvent(Entity vehicle, Player whoKilled) {
-		this.car = vehicle;
-		this.player = whoKilled;
-	}
-	
-	public Player getPlayerWhoKilled(){
-		return player;
-	}
-	
-	public boolean didPlayerKill(){
-		return player != null;
+		this.hit = hit;
+		this.damageToEntity = damageToEntity;
 	}
 
 	public boolean isCancelled() {
@@ -40,6 +28,18 @@ public class ucarDeathEvent extends Event implements Cancellable {
 
 	public Entity getCar() {
 		return car;
+	}
+	
+	public Entity getEntityCrashedInto(){
+		return this.hit;
+	}
+	
+	public double getDamageToBeDoneToTheEntity(){
+		return this.damageToEntity;
+	}
+	
+	public void setDamageToBeDoneToTheEntity(double dmg){
+		this.damageToEntity = dmg;
 	}
 
 	@Override
