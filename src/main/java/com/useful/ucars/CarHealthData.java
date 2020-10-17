@@ -1,113 +1,73 @@
 package com.useful.ucars;
 
+import com.useful.ucars.common.StatValue;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
-public class CarHealthData implements MetadataValue {
-	double health = 5;
-	Plugin plugin = null;
+public class CarHealthData extends StatValue {
+    private double health;
 
-	public CarHealthData(double health, Plugin plugin) {
-		this.health = health;
-		this.plugin = plugin;
-	}
+    public CarHealthData(Plugin plugin, double health) {
+        super(plugin, health);
+        this.health = health;
+        this.plugin = plugin;
+    }
 
-	// @Override
-	public boolean asBoolean() {
-		return false;
-	}
+    @Override
+    public int asInt() {
+        return (int) Math.floor(health + 0.5f);
+    }
 
-	// @Override
-	public byte asByte() {
-		return 0;
-	}
+    @Override
+    public long asLong() {
+        return Math.round(health);
+    }
 
-	// @Override
-	public double asDouble() {
-		return health;
-	}
+    @Override
+    public void invalidate() {
+        health = 0;
+    }
 
-	// @Override
-	public float asFloat() {
-		return (float) (health);
-	}
+    @Override
+    public Object value() {
+        return health;
+    }
 
-	// @Override
-	public int asInt() {
-		return (int) Math.floor(health + 0.5f);
-	}
+    public void damage(double amount, Entity carEntity) {
+        health = ((int) this.health - amount);
+        if (health <= 0) {
+            die(carEntity);
+        }
+    }
 
-	// @Override
-	public long asLong() {
-		return Math.round(health);
-	}
+    public void damage(double amount, Entity carEntity, Player whoHurt) {
+        health = ((int) this.health - amount);
+        if (health <= 0) {
+            die(carEntity, whoHurt);
+        }
+    }
 
-	// @Override
-	public short asShort() {
-		return Short.parseShort("" + health);
-	}
+    public double getHealth() {
+        return this.health;
+    }
 
-	// @Override
-	public String asString() {
-		return "" + health;
-	}
+    public void setHealth(double amount) {
+        this.health = ((int) amount);
+    }
 
-	// @Override
-	public Plugin getOwningPlugin() {
-		return plugin;
-	}
+    public void die(Entity m, Player whoHurt) {
+        if (m == null || !m.isValid() || m.isDead()) {
+            return;
+        }
+        Bukkit.getPluginManager().callEvent(new UCarDeathEvent(m, whoHurt));
+    }
 
-	// @Override
-	public void invalidate() {
-		health = 0;
-		return;
-	}
-
-	// @Override
-	public Object value() {
-		return health;
-	}
-
-	public void damage(double amount, Entity carEntity) {
-		health = ((int)this.health - amount);
-		if (health <= 0) {
-			die(carEntity);
-		}
-		return;
-	}
-	
-	public void damage(double amount, Entity carEntity, Player whoHurt) {
-		health = ((int)this.health - amount);
-		if (health <= 0) {
-			die(carEntity, whoHurt);
-		}
-		return;
-	}
-
-	public void setHealth(double amount) {
-		this.health = ((int)amount);
-	}
-
-	public double getHealth() {
-		return this.health;
-	}
-	
-	public void die(Entity m, Player whoHurt){
-		if(m == null || !m.isValid() || m.isDead()){
-			return;
-		}
-		Bukkit.getPluginManager().callEvent(new UCarDeathEvent(m, whoHurt));
-		return;
-	}
-
-	public void die(Entity carEntity){
-		if(carEntity == null || !carEntity.isValid() || carEntity.isDead()){
-			return;
-		}
-		Bukkit.getPluginManager().callEvent(new UCarDeathEvent(carEntity));
-		return;
-	}
+    public void die(Entity carEntity) {
+        if (carEntity == null || !carEntity.isValid() || carEntity.isDead()) {
+            return;
+        }
+        Bukkit.getPluginManager().callEvent(new UCarDeathEvent(carEntity));
+    }
 }

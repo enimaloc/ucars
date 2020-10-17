@@ -1,38 +1,39 @@
 package com.useful.ucars;
 
+import org.bukkit.ChatColor;
+
 public class Colors {
-	private String success = "";
-	private String error = "";
-	private String info = "";
-	private String title = "";
-	private String tp = "";
+    private final String success;
+    private final String error;
+    private final String info;
+    private final String title;
+    private final String tp;
 
-	public Colors(String success, String error, String info, String title,
-			String tp) {
-		this.success = UCars.colorise(success);
-		this.error = UCars.colorise(error);
-		this.info = UCars.colorise(info);
-		this.title = UCars.colorise(title);
-		this.tp = UCars.colorise(tp);
-	}
+    public Colors(String success, String error, String info, String title, String tp) {
+        this.success = ChatColor.translateAlternateColorCodes('&', success);
+        this.error = ChatColor.translateAlternateColorCodes('&', error);
+        this.info = ChatColor.translateAlternateColorCodes('&', info);
+        this.title = ChatColor.translateAlternateColorCodes('&', title);
+        this.tp = ChatColor.translateAlternateColorCodes('&', tp);
+    }
 
-	public String getSuccess() {
-		return this.success;
-	}
+    public String getSuccess() {
+        return this.success;
+    }
 
-	public String getError() {
-		return this.error;
-	}
+    public String getError() {
+        return this.error;
+    }
 
-	public String getInfo() {
-		return this.info;
-	}
+    public String getInfo() {
+        return this.info;
+    }
 
-	public String getTitle() {
-		return this.title;
-	}
+    public String getTitle() {
+        return this.title;
+    }
 
-	public String getTp() {
-		return this.tp;
-	}
+    public String getTp() {
+        return this.tp;
+    }
 }

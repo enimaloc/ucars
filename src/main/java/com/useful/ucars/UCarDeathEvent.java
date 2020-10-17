@@ -1,53 +1,64 @@
 package com.useful.ucars;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class UCarDeathEvent extends Event implements Cancellable {
-	public Boolean cancelled = false;
-	private static final HandlerList handlers = new HandlerList();
-	private Entity car = null;
-	private Player player = null;
-	
-	public UCarDeathEvent(Entity vehicle) {
-		this.car = vehicle;
-	}
-	
-	public UCarDeathEvent(Entity vehicle, Player whoKilled) {
-		this.car = vehicle;
-		this.player = whoKilled;
-	}
-	
-	public Player getPlayerWhoKilled(){
-		return player;
-	}
-	
-	public boolean didPlayerKill(){
-		return player != null;
-	}
+    private static final HandlerList handlers = new HandlerList();
+    public Boolean cancelled = false;
+    private final Entity car;
+    private final Player player;
 
-	public boolean isCancelled() {
-		return this.cancelled;
-	}
+    public UCarDeathEvent(Entity vehicle) {
+        this(vehicle, null);
+    }
 
-	public void setCancelled(boolean arg0) {
-		this.cancelled = arg0;
-	}
+    public UCarDeathEvent(Entity vehicle, Player whoKilled) {
+        this.car = vehicle;
+        this.player = whoKilled;
+    }
 
-	public Entity getCar() {
-		return car;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public Player getPlayerWhoKilled() {
+        return player;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public boolean didPlayerKill() {
+        return player != null;
+    }
+
+    /**
+     * Gets the cancellation state of this event. A cancelled event will not be executed in the server, but will still pass to other plugins
+     *
+     * @return true if this event is cancelled
+     */
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    /**
+     * Sets the cancellation state of this event. A cancelled event will not be executed in the server, but will still pass to other plugins
+     *
+     * @param cancelled true if you wish to cancel this event
+     */
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    public Entity getCar() {
+        return car;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

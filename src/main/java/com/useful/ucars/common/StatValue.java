@@ -4,64 +4,121 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 public class StatValue implements MetadataValue {
-	public Object value = null;
-	public Plugin plugin = null;
+    public Object value;
+    public Plugin plugin;
 
-	public StatValue(Object value, Plugin plugin) {
-		this.value = value;
-		this.plugin = plugin;
-	}
+    public StatValue(Plugin plugin, Object value) {
+        this.value = value;
+        this.plugin = plugin;
+    }
 
-	public Object getValue() {
-		return this.value;
-	}
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
-	public void setValue(Object value) {
-		this.value = value;
-		return;
-	}
+    @Override
+    public Object value() {
+        return this.value;
+    }
 
-	public boolean asBoolean() {
-		return false;
-	}
+    @Override
+    public Plugin getOwningPlugin() {
+        return plugin;
+    }
 
-	public byte asByte() {
-		return 0;
-	}
+    @Override
+    public int asInt() {
+        try {
+            return value instanceof Integer ?
+                    (int) value :
+                    value instanceof String ?
+                            Integer.parseInt((String) value) :
+                            0;
+        } catch (NumberFormatException ignored) {
+        }
+        return 0;
+    }
 
-	public double asDouble() {
-		return 0;
-	}
+    @Override
+    public float asFloat() {
+        try {
+            return value instanceof Float ?
+                    (float) value :
+                    value instanceof String ?
+                            Float.parseFloat((String) value) :
+                            0;
+        } catch (NumberFormatException ignored) {
+        }
+        return 0;
+    }
 
-	public float asFloat() {
-		return 0;
-	}
+    @Override
+    public double asDouble() {
+        try {
+            return value instanceof Double ?
+                    (double) value :
+                    value instanceof String ?
+                            Double.parseDouble((String) value) :
+                            0;
+        } catch (NumberFormatException ignored) {
+        }
+        return 0;
+    }
 
-	public int asInt() {
-		return 0;
-	}
+    @Override
+    public long asLong() {
+        try {
+            return value instanceof Long ?
+                    (long) value :
+                    value instanceof String ?
+                            Long.parseLong((String) value) :
+                            0;
+        } catch (NumberFormatException ignored) {
+        }
+        return 0;
+    }
 
-	public long asLong() {
-		return 0;
-	}
+    @Override
+    public short asShort() {
+        try {
+            return value instanceof Short ?
+                    (short) value :
+                    value instanceof String ?
+                            Short.parseShort((String) value) :
+                            0;
+        } catch (NumberFormatException ignored) {
+        }
+        return 0;
+    }
 
-	public short asShort() {
-		return 0;
-	}
+    @Override
+    public byte asByte() {
+        try {
+            return value instanceof Byte ?
+                    (byte) value :
+                    value instanceof String ?
+                            Byte.parseByte((String) value) :
+                            0;
+        } catch (NumberFormatException ignored) {
+        }
+        return 0;
+    }
 
-	public String asString() {
-		return null;
-	}
+    @Override
+    public boolean asBoolean() {
+        return value instanceof Boolean ?
+                (boolean) value :
+                value instanceof String && Boolean.parseBoolean((String) value);
+    }
 
-	public Plugin getOwningPlugin() {
-		return plugin;
-	}
+    @Override
+    public String asString() {
+        return value instanceof String ?
+                (String) value :
+                String.valueOf(value);
+    }
 
-	public void invalidate() {
-		return;
-	}
-
-	public Object value() {
-		return value;
-	}
+    @Override
+    public void invalidate() {
+    }
 }

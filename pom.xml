@@ -3,7 +3,7 @@
     <groupId>com.useful</groupId>
     <artifactId>uCars</artifactId>
     <name>uCars</name>
-    <url>https://github.com/USERNAME/TEMPLATE</url>
+    <url>https://github.com/USERNAME/TEMPLAT</url>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/storm345dev/ucars/issues</url>
@@ -27,8 +27,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
             <plugin>

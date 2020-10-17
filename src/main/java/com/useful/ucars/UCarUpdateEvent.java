@@ -7,84 +7,82 @@ import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.util.Vector;
 
 public class UCarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
-	public Vector toTravel = new Vector();
-	public Boolean changePlayerYaw = false;
-	public float yaw = 90;
-	public Boolean doDivider = false;;
-	public double divider = 1;
-	public Boolean cancelled = false;
-	public Player player = null;
-	private int readCount = 0;
-	private CarDirection dir;
+    public Vector toTravel;
+    public Boolean changePlayerYaw = false;
+    public float yaw = 90;
+    public Boolean doDivider = false;
+    ;
+    public double divider = 1;
+    public Boolean cancelled = false;
+    public Player player = null;
+    private int readCount = 0;
+    private CarDirection dir;
 
-	public UCarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player, CarDirection dir) {
-		super(vehicle);
-		this.toTravel = toTravel;
-		this.player = player;
-		this.dir = dir;
-	}
-	
-	public void setRead(int r){
-		this.readCount = r;
-	}
-	
-	public void incrementRead(){
-		readCount++;
-	}
-	
-	public int getReadCount(){
-		return readCount;
-	}
+    public UCarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player, CarDirection dir) {
+        super(vehicle);
+        this.toTravel = toTravel;
+        this.player = player;
+        this.dir = dir;
+    }
 
-	public Player getPlayer() {
-		return player;
-	}
+    public void setRead(int r) {
+        this.readCount = r;
+    }
 
-	public Vector getTravelVector() {
-		return this.toTravel;
-	}
+    public void incrementRead() {
+        readCount++;
+    }
 
-	public void setChangePlayerYaw(Boolean change) {
-		this.changePlayerYaw = change;
-		return;
-	}
+    public int getReadCount() {
+        return readCount;
+    }
 
-	public Boolean getChangePlayerYaw() {
-		return this.changePlayerYaw;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public void setDoDivider(Boolean doDivider) {
-		this.doDivider = doDivider;
-		return;
-	}
+    public Vector getTravelVector() {
+        return this.toTravel;
+    }
 
-	public Boolean getDoDivider() {
-		return this.doDivider;
-	}
+    public Boolean getChangePlayerYaw() {
+        return this.changePlayerYaw;
+    }
 
-	public void setDivider(double divider) {
-		this.divider = divider;
-		return;
-	}
+    public void setChangePlayerYaw(Boolean change) {
+        this.changePlayerYaw = change;
+    }
 
-	public double getDivider() {
-		return this.divider;
-	}
+    public Boolean getDoDivider() {
+        return this.doDivider;
+    }
 
-	public boolean isCancelled() {
-		return this.cancelled;
-	}
+    public void setDoDivider(Boolean doDivider) {
+        this.doDivider = doDivider;
+    }
 
-	public void setCancelled(boolean arg0) {
-		this.cancelled = arg0;
-	}
+    public double getDivider() {
+        return this.divider;
+    }
 
-	public CarDirection getDir() {
-		return dir;
-	}
+    public void setDivider(double divider) {
+        this.divider = divider;
+    }
 
-	public void setDir(CarDirection dir) {
-		this.dir = dir;
-	}
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    public void setCancelled(boolean arg0) {
+        this.cancelled = arg0;
+    }
+
+    public CarDirection getDir() {
+        return dir;
+    }
+
+    public void setDir(CarDirection dir) {
+        this.dir = dir;
+    }
 
 }
